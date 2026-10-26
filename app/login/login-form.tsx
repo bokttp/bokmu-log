@@ -8,6 +8,9 @@ export default function LoginForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const redirectTo = () => `${window.location.origin}/auth/callback`;
+  const isConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
 
   async function signInWithGoogle() {
     const supabase = createClient();
@@ -37,6 +40,15 @@ export default function LoginForm() {
           {email}로 로그인 링크를 보냈어요. 링크를 누르면 바로 로그인돼요.
         </p>
       </div>
+    );
+  }
+
+  if (!isConfigured) {
+    return (
+      <p className="mt-8 rounded-xl bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+        Supabase가 아직 연결되지 않았어요. <code>.env.local</code>에 URL과 키를 넣고 개발 서버를 다시
+        시작하면 로그인할 수 있어요.
+      </p>
     );
   }
 

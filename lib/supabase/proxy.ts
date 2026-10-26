@@ -8,6 +8,11 @@ const PROTECTED_PATHS = ["/dashboard", "/goals", "/records", "/settings", "/savi
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  // .env.local이 아직 없으면 로그인 검사 없이 화면만 보여준다 (로컬 화면 확인용)
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return response;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
