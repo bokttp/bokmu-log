@@ -13,7 +13,10 @@ const LEVEL_CLASS = [
 ];
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
-// 최근 12주 기록 잔디. 칸을 누르면 그날 기록을 아래에 보여준다. (명세 7.3)
+const label = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.slice(8))}일`;
+
+// 최근 12주 기록 잔디. 칸을 누르면 그날 기록을 보여준다. (명세 7.3)
+// 넓은 화면에서는 잔디 오른쪽에, 좁은 화면에서는 아래에 기록이 나온다.
 export default function RecordGrass({
   weeks,
   records,
@@ -28,61 +31,62 @@ export default function RecordGrass({
   const dayRecords = selected ? (byDate.get(selected) ?? []) : [];
 
   return (
-    <div>
-      <div className="flex gap-1">
-        <div className="grid grid-rows-7 gap-1 pr-1 text-[10px] leading-none text-zinc-400">
+    <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
+      <div className="w-full lg:max-w-md">
+        {/* 첫 열은 요일, 이후 12열은 주. grid-flow-col로 위→아래, 왼쪽→오른쪽 순서로 채운다 */}
+        <div className="grid grid-flow-col grid-cols-[auto_repeat(12,minmax(0,1fr))] grid-rows-7 gap-1">
           {WEEKDAYS.map((w, i) => (
-            <span key={w} className="flex h-4 items-center">
+            <span key={w} className="flex items-center pr-1 text-[10px] leading-none text-zinc-400">
               {i % 2 === 0 ? w : ""}
             </span>
           ))}
-        </div>
-        {weeks.map((week) => (
-          <div key={week[0].date} className="grid flex-1 grid-rows-7 gap-1">
-            {week.map((cell) =>
-              cell.future ? (
-                <span key={cell.date} className="h-4" />
-              ) : (
-                <button
-                  key={cell.date}
-                  type="button"
-                  onClick={() => setSelected(cell.date === selected ? null : cell.date)}
-                  aria-label={`${cell.date} 기록 ${byDate.get(cell.date)?.length ?? 0}건`}
-                  className={`h-4 rounded-sm ${LEVEL_CLASS[level(cell.date)]} ${
-                    cell.date === selected ? "ring-2 ring-zinc-900 dark:ring-white" : ""
-                  }`}
-                />
-              ),
-            )}
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-zinc-400">
-        적음
-        {LEVEL_CLASS.map((c) => (
-          <span key={c} className={`h-3 w-3 rounded-sm ${c}`} />
-        ))}
-        많음
-      </div>
-
-      {selected && (
-        <div className="mt-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-900">
-          <p className="text-sm font-semibold">{selected.slice(5).replace("-", "월 ")}일 기록</p>
-          {dayRecords.length === 0 ? (
-            <p className="mt-1 text-sm text-zinc-500">이날은 기록이 없어요.</p>
-          ) : (
-            <ul className="mt-1 flex flex-col gap-1 text-sm">
-              {dayRecords.map((r) => (
-                <li key={r.id} className="flex justify-between gap-2">
-                  <span>{r.content}</span>
-                  {r.minutes && <span className="shrink-0 text-zinc-500">{r.minutes}분</span>}
-                </li>
-              ))}
-            </ul>
+          {weeks.flat().map((cell) =>
+            cell.future ? (
+              <span key={cell.date} className="aspect-square" />
+            ) : (
+              <button
+                key={cell.date}
+                type="button"
+                onClick={() => setSelected(cell.date === selected ? null : cell.date)}
+                title={`${label(cell.date)} · ${byDate.get(cell.date)?.length ?? 0}건`}
+                aria-label={`${label(cell.date)} 기록 ${byDate.get(cell.date)?.length ?? 0}건`}
+                className={`aspect-square rounded-sm hover:ring-2 hover:ring-zinc-400 ${LEVEL_CLASS[level(cell.date)]} ${
+                  cell.date === selected ? "ring-2 ring-zinc-900 dark:ring-white" : ""
+                }`}
+              />
+            ),
           )}
         </div>
-      )}
+        <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-zinc-400">
+          적음
+          {LEVEL_CLASS.map((c) => (
+            <span key={c} className={`h-3 w-3 rounded-sm ${c}`} />
+          ))}
+          많음
+        </div>
+      </div>
+
+      <div className="min-h-24 flex-1 rounded-xl bg-zinc-50 p-4 dark:bg-zinc-900">
+        {!selected ? (
+          <p className="text-sm text-zinc-500">칸을 누르면 그날 기록이 여기에 보여요.</p>
+        ) : (
+          <>
+            <p className="text-sm font-semibold">{label(selected)} 기록</p>
+            {dayRecords.length === 0 ? (
+              <p className="mt-1 text-sm text-zinc-500">이날은 기록이 없어요.</p>
+            ) : (
+              <ul className="mt-2 flex flex-col gap-2 text-sm">
+                {dayRecords.map((r) => (
+                  <li key={r.id} className="flex justify-between gap-2">
+                    <span>{r.content}</span>
+                    {r.minutes && <span className="shrink-0 text-zinc-500">{r.minutes}분</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

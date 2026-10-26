@@ -39,62 +39,91 @@ export default async function DashboardPage() {
 
   return (
     <main className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">
-        {profile?.nickname ? `${profile.nickname}님, 오늘도 한 걸음` : "홈"}
-      </h1>
+      <header>
+        <h1 className="text-2xl font-bold md:text-3xl">
+          {profile?.nickname ? `${profile.nickname}님, 오늘도 한 걸음` : "홈"}
+        </h1>
+        <p className="mt-1 text-sm text-zinc-500">{today.replaceAll("-", ".")} 기준</p>
+      </header>
 
-      {/* 전역 카드 (F-03) */}
-      {profile?.enlist_date && profile.discharge_date ? (
-        <ServiceCard
-          enlist={profile.enlist_date}
-          discharge={profile.discharge_date}
-          branchLabel={profile.branch ? BRANCH_LABELS[profile.branch] : ""}
-          showRank={profile.branch !== "social"}
-          today={today}
-        />
-      ) : (
-        <Link href="/settings" className="rounded-2xl border border-dashed border-zinc-300 p-5 text-center text-sm dark:border-zinc-700">
-          입대일을 입력하면 전역 D-day가 보여요 →
-        </Link>
-      )}
-
-      {/* 이번 달 요약 */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold text-zinc-500">{Number(month.slice(5))}월 요약</h2>
-        <dl className="grid grid-cols-3 gap-2 text-center">
-          <Stat label="기록" value={`${monthRecords.length}건`} />
-          <Stat label="총 시간" value={`${Math.round((monthMinutes / 60) * 10) / 10}시간`} />
-          <Stat label="완료 목표" value={`${monthDone}개`} />
-        </dl>
-      </section>
-
-      {/* 기록 잔디 */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold text-zinc-500">최근 12주 기록</h2>
-        <RecordGrass weeks={weeks} records={records} />
-      </section>
-
-      {/* 진행 중 목표 3개 */}
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-zinc-500">진행 중인 목표</h2>
-          <Link href="/goals" className="text-sm text-emerald-700 dark:text-emerald-400">
-            전체 보기
-          </Link>
+      {/* 넓은 화면: 3열 그리드 (왼쪽 2칸 + 오른쪽 1칸) */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* 전역 카드 (F-03) */}
+        <div className="lg:col-span-2">
+          {profile?.enlist_date && profile.discharge_date ? (
+            <ServiceCard
+              enlist={profile.enlist_date}
+              discharge={profile.discharge_date}
+              branchLabel={profile.branch ? BRANCH_LABELS[profile.branch] : ""}
+              showRank={profile.branch !== "social"}
+              today={today}
+            />
+          ) : (
+            <Link href="/settings" className="flex h-full items-center justify-center rounded-2xl border border-dashed border-zinc-300 p-5 text-center text-sm dark:border-zinc-700">
+              입대일을 입력하면 전역 D-day가 보여요 →
+            </Link>
+          )}
         </div>
-        {activeGoals.length === 0 ? (
-          <Link href="/goals" className="block rounded-2xl border border-dashed border-zinc-300 p-5 text-center text-sm dark:border-zinc-700">
-            첫 목표 만들기 →
-          </Link>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {activeGoals.slice(0, 3).map((g) => (
-              <GoalCard key={g.id} goal={g} today={today} />
-            ))}
-          </div>
-        )}
-      </section>
+
+        {/* 이번 달 요약 */}
+        <Panel title={`${Number(month.slice(5))}월 요약`}>
+          <dl className="grid grid-cols-3 gap-2 text-center lg:grid-cols-1 lg:text-left">
+            <Stat label="기록" value={`${monthRecords.length}건`} />
+            <Stat label="총 시간" value={`${Math.round((monthMinutes / 60) * 10) / 10}시간`} />
+            <Stat label="완료 목표" value={`${monthDone}개`} />
+          </dl>
+        </Panel>
+
+        {/* 기록 잔디 */}
+        <Panel title="최근 12주 기록" className="lg:col-span-2">
+          <RecordGrass weeks={weeks} records={records} />
+        </Panel>
+
+        {/* 진행 중 목표 3개 */}
+        <Panel
+          title="진행 중인 목표"
+          action={
+            <Link href="/goals" className="text-sm text-emerald-700 hover:underline dark:text-emerald-400">
+              전체 보기
+            </Link>
+          }
+        >
+          {activeGoals.length === 0 ? (
+            <Link href="/goals" className="block rounded-xl border border-dashed border-zinc-300 p-5 text-center text-sm dark:border-zinc-700">
+              첫 목표 만들기 →
+            </Link>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {activeGoals.slice(0, 3).map((g) => (
+                <GoalCard key={g.id} goal={g} today={today} />
+              ))}
+            </div>
+          )}
+        </Panel>
+      </div>
     </main>
+  );
+}
+
+function Panel({
+  title,
+  action,
+  className = "",
+  children,
+}: {
+  title: string;
+  action?: React.ReactNode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className={`rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800 ${className}`}>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="font-semibold">{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
   );
 }
 
@@ -115,22 +144,42 @@ function ServiceCard({
   const rank = rankStatus(enlist, today);
 
   return (
-    <section className="rounded-2xl bg-emerald-800 p-5 text-white">
-      <p className="text-sm text-emerald-100">
-        {branchLabel} · 전역 {discharge.replaceAll("-", ".")}
-      </p>
-      <p className="mt-1 text-4xl font-bold tracking-tight">{formatDday(dday)}</p>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-emerald-950/50" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
-        <div className="h-full rounded-full bg-white" style={{ width: `${percent}%` }} />
+    <section className="flex h-full flex-col justify-between gap-6 rounded-2xl bg-emerald-800 p-5 text-white md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-emerald-100">{branchLabel} · 전역까지</p>
+          <p className="mt-1 text-5xl font-bold tracking-tight md:text-6xl">{formatDday(dday)}</p>
+        </div>
+        <p className="text-3xl font-semibold md:text-4xl">{percent}%</p>
       </div>
-      <div className="mt-2 flex justify-between text-sm">
-        <span>복무율 {percent}%</span>
-        {showRank && (
-          <span className="text-emerald-100">
-            {rank.current}
-            {rank.next && ` · ${rank.next.rank} ${rank.next.date.slice(5).replace("-", ".")} (예상)`}
-          </span>
-        )}
+
+      <div>
+        <div className="h-3 overflow-hidden rounded-full bg-emerald-950/50" role="progressbar" aria-label="복무율" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
+          <div className="h-full rounded-full bg-white" style={{ width: `${percent}%` }} />
+        </div>
+        <dl className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
+          <div>
+            <dt className="text-emerald-200">입대일</dt>
+            <dd className="font-semibold">{enlist.replaceAll("-", ".")}</dd>
+          </div>
+          <div>
+            <dt className="text-emerald-200">전역일</dt>
+            <dd className="font-semibold">{discharge.replaceAll("-", ".")}</dd>
+          </div>
+          {showRank && (
+            <div>
+              <dt className="text-emerald-200">계급</dt>
+              <dd className="font-semibold">
+                {rank.current}
+                {rank.next && (
+                  <span className="font-normal text-emerald-100">
+                    {" "}→ {rank.next.rank} {rank.next.date.slice(5).replace("-", ".")} (예상)
+                  </span>
+                )}
+              </dd>
+            </div>
+          )}
+        </dl>
       </div>
     </section>
   );
@@ -138,9 +187,9 @@ function ServiceCard({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-zinc-50 py-3 dark:bg-zinc-900">
-      <dt className="text-xs text-zinc-500">{label}</dt>
-      <dd className="mt-1 font-semibold">{value}</dd>
+    <div className="rounded-xl bg-zinc-50 py-3 lg:flex lg:items-center lg:justify-between lg:px-4 lg:py-4 dark:bg-zinc-900">
+      <dt className="text-xs text-zinc-500 lg:text-sm">{label}</dt>
+      <dd className="mt-1 font-semibold lg:mt-0 lg:text-xl">{value}</dd>
     </div>
   );
 }

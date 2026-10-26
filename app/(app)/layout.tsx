@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
+import SiteHeader from "@/components/site-header";
 import BottomNav from "@/components/bottom-nav";
 
 // 로그인 필수 영역. proxy.ts가 먼저 막지만, 서버에서 한 번 더 확인한다.
@@ -26,6 +27,7 @@ async function RequireUser({ children }: { children: React.ReactNode }) {
   return children;
 }
 
+// 넓은 화면: 상단 메뉴 + 최대 1152px 본문. 휴대폰: 하단 탭.
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <>
@@ -34,7 +36,8 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           데모 모드 — 예시 데이터예요. 저장은 되지 않아요.
         </p>
       )}
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-6 pb-24">
+      <SiteHeader />
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pt-6 pb-24 md:px-8 md:pt-10 md:pb-16">
         <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-900" />}>
           <RequireUser>{children}</RequireUser>
         </Suspense>

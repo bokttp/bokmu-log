@@ -10,9 +10,14 @@ export default async function NewRecordPage({ searchParams }: PageProps<"/record
   const defaultGoalId = typeof goal === "string" && goals.some((g) => g.id === goal) ? goal : "";
 
   return (
-    <main className="flex flex-col gap-5">
-      <h1 className="text-2xl font-bold">기록 추가</h1>
-      <RecordForm goals={goals} today={todayKST()} defaultGoalId={defaultGoalId} />
+    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+      <header>
+        <h1 className="text-2xl font-bold md:text-3xl">기록 추가</h1>
+        <p className="mt-1 text-sm text-zinc-500">오늘 한 자기계발을 짧게 남겨 보세요.</p>
+      </header>
+      <div className="rounded-2xl border border-zinc-200 p-5 md:p-8 dark:border-zinc-800">
+        <RecordForm goals={goals} today={todayKST()} defaultGoalId={defaultGoalId} />
+      </div>
     </main>
   );
 }

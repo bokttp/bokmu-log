@@ -20,36 +20,51 @@ export default async function GoalsPage({ searchParams }: PageProps<"/goals">) {
   ];
 
   return (
-    <main className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">목표</h1>
+    <main className="flex flex-col gap-6">
+      <header>
+        <h1 className="text-2xl font-bold md:text-3xl">목표</h1>
+        <p className="mt-1 text-sm text-zinc-500">
+          진행 중 {goals.filter((g) => g.status === "in_progress").length}개 · 완료{" "}
+          {goals.filter((g) => g.status === "done").length}개
+        </p>
+      </header>
 
-      <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-        {chips.map((c) => (
-          <Link
-            key={c.label}
-            href={c.key ? `/goals?category=${c.key}` : "/goals"}
-            className={`inline-flex h-10 shrink-0 items-center rounded-full px-4 text-sm ${
-              selected === c.key
-                ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                : "border border-zinc-300 dark:border-zinc-700"
-            }`}
-          >
-            {c.label}
-          </Link>
-        ))}
-      </nav>
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
+        <section className="flex flex-col gap-4">
+          <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
+            {chips.map((c) => (
+              <Link
+                key={c.label}
+                href={c.key ? `/goals?category=${c.key}` : "/goals"}
+                className={`inline-flex h-10 shrink-0 items-center rounded-full px-4 text-sm ${
+                  selected === c.key
+                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                    : "border border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+                }`}
+              >
+                {c.label}
+              </Link>
+            ))}
+          </nav>
 
-      <GoalForm />
+          {shown.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-zinc-300 py-16 text-center text-sm text-zinc-500 dark:border-zinc-700">
+              아직 목표가 없어요. 첫 목표를 만들어 보세요.
+            </p>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {shown.map((g) => (
+                <GoalCard key={g.id} goal={g} today={today} />
+              ))}
+            </div>
+          )}
+        </section>
 
-      {shown.length === 0 ? (
-        <p className="py-10 text-center text-sm text-zinc-500">아직 목표가 없어요. 첫 목표를 만들어 보세요.</p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {shown.map((g) => (
-            <GoalCard key={g.id} goal={g} today={today} />
-          ))}
-        </div>
-      )}
+        {/* 넓은 화면에서는 오른쪽에 고정되는 추가 패널 */}
+        <aside className="order-first lg:sticky lg:top-24 lg:order-none">
+          <GoalForm />
+        </aside>
+      </div>
     </main>
   );
 }

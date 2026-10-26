@@ -25,7 +25,8 @@ export default function GoalForm() {
   }
 
   return (
-    <form action={action} className="flex flex-col gap-3 rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+    <form action={action} className="flex flex-col gap-3 rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
+      <h2 className="font-semibold">새 목표</h2>
       <fieldset>
         <legend className="mb-2 text-sm font-medium">카테고리</legend>
         <div className="flex flex-wrap gap-2">
