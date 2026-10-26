@@ -1,17 +1,20 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
+import BottomNav from "@/components/bottom-nav";
 
 // 로그인 필수 영역. proxy.ts가 먼저 막지만, 서버에서 한 번 더 확인한다.
-// 온보딩 확인과 하단 탭은 2주차·4주차에 추가한다.
+// 데모 모드(Supabase 키 없는 로컬)에서는 로그인 없이 예시 데이터로 보여준다.
+// 온보딩 확인은 2주차에 추가한다.
+
+// 로그인 영역은 매 요청 사용자 데이터를 읽으므로 "즉시 이동" 검사에서 제외한다.
+// (Next.js 문서 'Authentication with Cache Components'의 마이그레이션 방법)
+// 이 설정은 세그먼트마다 따로 적용되므로, 데이터를 읽는 각 page.tsx에도 같은 줄을 둔다.
+export const instant = false;
+
 async function RequireUser({ children }: { children: React.ReactNode }) {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return (
-      <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-        Supabase가 아직 연결되지 않아 이 화면을 볼 수 없어요. <code>.env.local</code>을 먼저 설정하세요.
-      </p>
-    );
-  }
+  if (isDemoMode()) return children;
 
   const supabase = await createClient();
   const {
@@ -25,10 +28,18 @@ async function RequireUser({ children }: { children: React.ReactNode }) {
 
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-6">
-      <Suspense fallback={<div className="h-24 animate-pulse rounded-xl bg-zinc-100 dark:bg-zinc-900" />}>
-        <RequireUser>{children}</RequireUser>
-      </Suspense>
-    </div>
+    <>
+      {isDemoMode() && (
+        <p className="bg-amber-100 px-4 py-2 text-center text-xs font-medium text-amber-900 dark:bg-amber-900 dark:text-amber-100">
+          데모 모드 — 예시 데이터예요. 저장은 되지 않아요.
+        </p>
+      )}
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-6 pb-24">
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-900" />}>
+          <RequireUser>{children}</RequireUser>
+        </Suspense>
+      </div>
+      <BottomNav />
+    </>
   );
 }

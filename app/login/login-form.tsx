@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -45,10 +46,20 @@ export default function LoginForm() {
 
   if (!isConfigured) {
     return (
-      <p className="mt-8 rounded-xl bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-        Supabase가 아직 연결되지 않았어요. <code>.env.local</code>에 URL과 키를 넣고 개발 서버를 다시
-        시작하면 로그인할 수 있어요.
-      </p>
+      <div className="mt-8 flex flex-col gap-4">
+        <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          Supabase가 아직 연결되지 않았어요. <code>.env.local</code>에 URL과 키를 넣고 개발 서버를 다시
+          시작하면 로그인할 수 있어요.
+        </p>
+        {process.env.NODE_ENV !== "production" && (
+          <Link
+            href="/dashboard"
+            className="flex h-12 items-center justify-center rounded-xl bg-emerald-700 font-semibold text-white hover:bg-emerald-800"
+          >
+            예시 데이터로 둘러보기 (데모)
+          </Link>
+        )}
+      </div>
     );
   }
 

@@ -57,6 +57,8 @@ npx supabase gen types typescript --project-id <id> > types/database.ts
 - 서버에서 사용자 확인은 `supabase.auth.getUser()`로 한다. 쿠키 값만 믿지 않는다.
 - 날짜는 한국 시간(KST) 기준 `YYYY-MM-DD` 문자열로 다룬다. 오늘 날짜는 `todayKST()`를 쓴다.
 - 계산 로직은 `lib/`의 순수 함수로 두고, 바꿀 때마다 Vitest 테스트를 추가·실행한다.
+- 화면의 데이터 조회는 `lib/data.ts`, 저장·수정은 `lib/actions.ts`를 거친다. 둘 다 데모 모드(`lib/demo.ts`: Supabase 키가 없는 로컬)일 때는 예시 데이터를 쓰고 저장하지 않는다. 새 조회·액션을 만들 때도 데모 분기를 넣는다.
+- `app/(app)/` 아래 page.tsx는 `export const instant = false`를 둔다 (Cache Components에서 매 요청 사용자 데이터를 읽기 때문).
 - 정책 수치(복무 개월, 적금 한도·금리·매칭 비율)는 코드에 고정하지 않고 DB(`service_periods`, `app_settings`)에서 읽는다. 진급 간격만 `RANK_MONTHS` 상수로 둔다.
 - 스키마 변경은 반드시 `supabase/migrations/`에 새 번호의 SQL 파일로 추가한다. 기존 마이그레이션 파일은 고치지 않는다.
 - UI는 360px 폭 기준 모바일 우선, 터치 영역 44px 이상, 본문 16px 이상, 다크 모드 지원. 빈 상태·로딩·오류 화면을 항상 만든다.
