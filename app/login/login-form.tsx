@@ -7,9 +7,9 @@ import { signInWithPassword, signUpWithPassword } from "@/app/auth/actions";
 import type { ActionState } from "@/lib/actions";
 import ActionMessage from "@/components/action-message";
 
-const INPUT = "h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700";
+const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 const PRIMARY =
-  "flex h-12 items-center justify-center rounded-xl bg-emerald-700 font-semibold text-white hover:bg-emerald-800 disabled:opacity-60";
+  "flex h-12 items-center justify-center rounded-xl bg-army-700 font-semibold text-white hover:bg-army-800 disabled:opacity-60";
 
 // 이메일 + 비밀번호 로그인·회원가입. 메일을 보내지 않아 메일 발송 한도와 무관하다.
 // 비밀번호가 없는 예전(링크 로그인) 계정을 위해 "로그인 링크 받기"를 보조로 남겨 둔다.
@@ -48,7 +48,7 @@ export default function LoginForm() {
   return (
     <div className="mt-6 flex flex-col gap-4">
       {/* 로그인 / 회원가입 전환 */}
-      <div role="tablist" className="grid grid-cols-2 rounded-xl bg-zinc-100 p-1 dark:bg-zinc-800">
+      <div role="tablist" className="grid grid-cols-2 rounded-xl bg-sand-100 p-1 dark:bg-sand-800">
         {(["signin", "signup"] as const).map((m) => (
           <button
             key={m}
@@ -57,7 +57,7 @@ export default function LoginForm() {
             aria-selected={mode === m}
             onClick={() => setMode(m)}
             className={`h-10 rounded-lg text-sm font-semibold ${
-              mode === m ? "bg-white shadow-sm dark:bg-zinc-900" : "text-zinc-500"
+              mode === m ? "bg-white shadow-sm dark:bg-sand-900" : "text-sand-500"
             }`}
           >
             {m === "signin" ? "로그인" : "회원가입"}
@@ -106,7 +106,7 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={signInWithGoogle}
-          className="flex h-12 items-center justify-center rounded-xl border border-zinc-300 font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+          className="flex h-12 items-center justify-center rounded-xl border border-sand-300 font-semibold hover:bg-sand-50 dark:border-sand-700 dark:hover:bg-sand-900"
         >
           Google로 계속하기
         </button>
@@ -137,15 +137,15 @@ function MagicLinkFallback() {
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="text-sm text-zinc-500 underline">
+      <button type="button" onClick={() => setOpen(true)} className="text-sm text-sand-500 underline">
         비밀번호를 아직 안 만들었나요? 로그인 링크 받기
       </button>
     );
   }
 
   return (
-    <form onSubmit={send} className="flex flex-col gap-2 rounded-xl bg-zinc-50 p-4 text-sm dark:bg-zinc-800">
-      <p className="text-zinc-600 dark:text-zinc-400">
+    <form onSubmit={send} className="flex flex-col gap-2 rounded-xl bg-sand-50 p-4 text-sm dark:bg-sand-800">
+      <p className="text-sand-600 dark:text-sand-400">
         예전에 링크로 가입한 계정이에요? 링크로 로그인한 뒤 설정에서 비밀번호를 만들면 다음부터 비밀번호로 로그인할 수 있어요.
       </p>
       {status === "sent" ? (
@@ -161,7 +161,7 @@ function MagicLinkFallback() {
             aria-label="이메일"
             className={INPUT}
           />
-          <button type="submit" disabled={status === "sending"} className="h-10 rounded-lg border border-zinc-300 font-semibold dark:border-zinc-600">
+          <button type="submit" disabled={status === "sending"} className="h-10 rounded-lg border border-sand-300 font-semibold dark:border-sand-600">
             {status === "sending" ? "보내는 중..." : "로그인 링크 받기"}
           </button>
         </>

@@ -42,7 +42,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       )}
       <SiteHeader />
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pt-6 pb-24 md:px-8 md:pt-10 md:pb-16">
-        <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-900" />}>
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-sand-100 dark:bg-sand-900" />}>
           <RequireUser>{children}</RequireUser>
         </Suspense>
       </div>

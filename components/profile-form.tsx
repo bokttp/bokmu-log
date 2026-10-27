@@ -6,7 +6,7 @@ import { calcDischargeDate } from "@/lib/service";
 import { BRANCH_LABELS, type Branch, type Profile } from "@/lib/types";
 import ActionMessage from "./action-message";
 
-const INPUT = "h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700";
+const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 
 // 프로필 입력. 군종·입대일을 바꾸면 전역일을 다시 계산하고, 직접 고칠 수도 있다.
 // mode="onboarding"이면 저장 후 대시보드로 이동한다.
@@ -88,12 +88,12 @@ export default function ProfileForm({
           onChange={(e) => setDischarge(e.target.value)}
           className={INPUT}
         />
-        <span className="text-xs font-normal text-zinc-500">
+        <span className="text-xs font-normal text-sand-500">
           자동 계산된 날짜예요. 조기전역·연장 등으로 다르면 직접 고치세요.
         </span>
       </label>
       <ActionMessage state={state} />
-      <button type="submit" disabled={pending} className="h-12 rounded-xl bg-emerald-700 font-semibold text-white disabled:opacity-60">
+      <button type="submit" disabled={pending} className="h-12 rounded-xl bg-army-700 font-semibold text-white disabled:opacity-60">
         {pending ? "저장 중..." : mode === "onboarding" ? "시작하기" : "저장"}
       </button>
     </form>

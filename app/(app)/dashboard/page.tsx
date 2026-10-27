@@ -6,6 +6,7 @@ import { formatDday, rankStatus, serviceProgress, todayKST } from "@/lib/service
 import { BRANCH_LABELS } from "@/lib/types";
 import GoalCard from "@/components/goal-card";
 import RecordGrass from "@/components/record-grass";
+import RankBadge from "@/components/rank-badge";
 
 // 12주 잔디 칸: 이번 주 월요일에서 11주 전 월요일부터 오늘이 있는 주 일요일까지
 function grassWeeks(today: string) {
@@ -43,7 +44,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold md:text-3xl">
           {profile?.nickname ? `${profile.nickname}님, 오늘도 한 걸음` : "홈"}
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">{today.replaceAll("-", ".")} 기준</p>
+        <p className="mt-1 text-sm text-sand-500">{today.replaceAll("-", ".")} 기준</p>
       </header>
 
       {/* 넓은 화면: 3열 그리드 (왼쪽 2칸 + 오른쪽 1칸) */}
@@ -59,7 +60,7 @@ export default async function DashboardPage() {
               today={today}
             />
           ) : (
-            <Link href="/settings" className="flex h-full items-center justify-center rounded-2xl border border-dashed border-zinc-300 p-5 text-center text-sm dark:border-zinc-700">
+            <Link href="/settings" className="flex h-full items-center justify-center rounded-2xl border border-dashed border-sand-300 p-5 text-center text-sm dark:border-sand-700">
               입대일을 입력하면 전역 D-day가 보여요 →
             </Link>
           )}
@@ -88,13 +89,13 @@ export default async function DashboardPage() {
         <Panel
           title="진행 중인 목표"
           action={
-            <Link href="/goals" className="text-sm text-emerald-700 hover:underline dark:text-emerald-400">
+            <Link href="/goals" className="text-sm text-army-700 hover:underline dark:text-army-400">
               전체 보기
             </Link>
           }
         >
           {activeGoals.length === 0 ? (
-            <Link href="/goals" className="block rounded-xl border border-dashed border-zinc-300 p-5 text-center text-sm dark:border-zinc-700">
+            <Link href="/goals" className="block rounded-xl border border-dashed border-sand-300 p-5 text-center text-sm dark:border-sand-700">
               첫 목표 만들기 →
             </Link>
           ) : (
@@ -122,9 +123,12 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className={`rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800 ${className}`}>
+    <section className={`rounded-2xl border border-sand-200 bg-white/80 p-5 shadow-sm dark:border-sand-800 dark:bg-sand-900/60 ${className}`}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-semibold">{title}</h2>
+        <h2 className="flex items-center gap-2 font-semibold">
+          <span className="h-3 w-1.5 rounded-sm bg-khaki-400" aria-hidden />
+          {title}
+        </h2>
         {action}
       </div>
       {children}
@@ -149,38 +153,61 @@ function ServiceCard({
   const rank = rankStatus(enlist, today);
 
   return (
-    <section className="flex h-full flex-col justify-between gap-6 rounded-2xl bg-emerald-800 p-5 text-white md:p-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-2xl bg-army-800 p-5 text-khaki-100 shadow-md md:p-8">
+      {/* 위장 무늬 */}
+      <div className="camo pointer-events-none absolute inset-0 opacity-70" aria-hidden />
+
+      <div className="relative flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-emerald-100">{branchLabel} · 전역까지</p>
-          <p className="mt-1 text-5xl font-bold tracking-tight md:text-6xl">{formatDday(dday)}</p>
+          <p className="flex items-center gap-2 text-sm text-khaki-200">
+            <span className="rounded bg-khaki-300 px-1.5 py-0.5 text-xs font-bold text-army-900">{branchLabel}</span>
+            전역까지
+          </p>
+          <p className="mt-2 font-stencil text-6xl tracking-wide text-khaki-100 md:text-7xl">{formatDday(dday)}</p>
         </div>
-        <p className="text-3xl font-semibold md:text-4xl">{percent}%</p>
+        {showRank && (
+          <div className="flex flex-col items-center gap-1">
+            <RankBadge rank={rank.current} className="h-auto w-12 md:w-14" />
+            <span className="text-xs font-semibold text-khaki-200">{rank.current}</span>
+          </div>
+        )}
       </div>
 
-      <div>
-        <div className="h-3 overflow-hidden rounded-full bg-emerald-950/50" role="progressbar" aria-label="복무율" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
-          <div className="h-full rounded-full bg-white" style={{ width: `${percent}%` }} />
+      <div className="relative">
+        <div className="mb-2 flex items-baseline justify-between text-sm">
+          <span className="text-khaki-200">복무율</span>
+          <span className="font-stencil text-2xl text-khaki-100 md:text-3xl">{percent}%</span>
         </div>
-        <dl className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
+        {/* 10칸 눈금이 있는 진행 막대 */}
+        <div
+          className="relative h-4 overflow-hidden rounded bg-army-950/60 ring-1 ring-khaki-300/30"
+          role="progressbar"
+          aria-label="복무율"
+          aria-valuenow={percent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <div className="h-full bg-khaki-300" style={{ width: `${percent}%` }} />
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ backgroundImage: "repeating-linear-gradient(90deg, transparent 0 calc(10% - 2px), rgba(26,29,12,0.55) calc(10% - 2px) 10%)" }}
+            aria-hidden
+          />
+        </div>
+        <dl className="mt-5 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
           <div>
-            <dt className="text-emerald-200">입대일</dt>
+            <dt className="text-khaki-300">입대일</dt>
             <dd className="font-semibold">{enlist.replaceAll("-", ".")}</dd>
           </div>
           <div>
-            <dt className="text-emerald-200">전역일</dt>
+            <dt className="text-khaki-300">전역일</dt>
             <dd className="font-semibold">{discharge.replaceAll("-", ".")}</dd>
           </div>
-          {showRank && (
+          {showRank && rank.next && (
             <div>
-              <dt className="text-emerald-200">계급</dt>
+              <dt className="text-khaki-300">다음 진급 (예상)</dt>
               <dd className="font-semibold">
-                {rank.current}
-                {rank.next && (
-                  <span className="font-normal text-emerald-100">
-                    {" "}→ {rank.next.rank} {rank.next.date.slice(5).replace("-", ".")} (예상)
-                  </span>
-                )}
+                {rank.next.rank} · {rank.next.date.slice(5).replace("-", ".")}
               </dd>
             </div>
           )}
@@ -192,9 +219,9 @@ function ServiceCard({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-zinc-50 py-3 lg:flex lg:items-center lg:justify-between lg:px-4 lg:py-4 dark:bg-zinc-900">
-      <dt className="text-xs text-zinc-500 lg:text-sm">{label}</dt>
-      <dd className="mt-1 font-semibold lg:mt-0 lg:text-xl">{value}</dd>
+    <div className="rounded-xl border border-sand-200 bg-sand-100/70 py-3 lg:flex lg:items-center lg:justify-between lg:px-4 lg:py-4 dark:border-sand-800 dark:bg-sand-900">
+      <dt className="text-xs text-sand-600 lg:text-sm dark:text-sand-400">{label}</dt>
+      <dd className="mt-1 font-bold text-army-800 lg:mt-0 lg:text-xl dark:text-khaki-200">{value}</dd>
     </div>
   );
 }

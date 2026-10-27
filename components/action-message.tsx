@@ -8,7 +8,7 @@ export default function ActionMessage({ state }: { state: ActionState }) {
       role="status"
       className={`rounded-lg p-3 text-sm ${
         state.ok
-          ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
+          ? "bg-army-50 text-army-800 dark:bg-army-950 dark:text-army-200"
           : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
       }`}
     >

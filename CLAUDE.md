@@ -62,6 +62,8 @@ npx supabase gen types typescript --project-id <id> > types/database.ts
 - 정책 수치(복무 개월, 적금 한도·금리·매칭 비율)는 코드에 고정하지 않고 DB(`service_periods`, `app_settings`)에서 읽는다. 진급 간격만 `RANK_MONTHS` 상수로 둔다.
 - 스키마 변경은 반드시 `supabase/migrations/`에 새 번호의 SQL 파일로 추가한다. 기존 마이그레이션 파일은 고치지 않는다.
 - UI는 웹사이트(넓은 화면) 기준으로 설계한다. 로그인 후 화면은 상단 메뉴 + 최대 폭 1152px(`max-w-6xl`), 넓은 화면에서는 여러 열 그리드를 쓴다. 휴대폰(`md` 미만)에서는 하단 탭으로 바뀌고 360px에서도 가로 스크롤이 없어야 한다.
+- 색은 `app/globals.css`의 팔레트만 쓴다: 주 색 `army-*`(군복 올리브), 강조 `khaki-*`, 중립 `sand-*`. Tailwind 기본 회색·초록(zinc, gray, emerald 등)은 쓰지 않는다. 오류는 `red-*`.
+- 글꼴: 본문 `font-sans`(IBM Plex Sans KR), D-day·숫자 강조 `font-stencil`(영문·숫자 전용). 위장 무늬 배경은 `.camo`, 계급장은 `components/rank-badge.tsx`.
 - 터치 영역 44px 이상, 본문 16px 이상, 다크 모드 지원. 빈 상태·로딩·오류 화면을 항상 만든다.
 - 화면 문구는 한국어, 해요체로 쓴다.
 - 브랜치는 `feat/기능명`, `fix/내용`. 커밋 메시지는 `feat: 목표 추가 폼`처럼 쓴다.

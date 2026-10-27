@@ -9,7 +9,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-zinc-200 bg-white/95 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/95">
+    <nav className="fixed inset-x-0 bottom-0 z-10 border-t-4 border-khaki-300 bg-army-800 md:hidden dark:bg-army-950">
       <ul className="grid grid-cols-4">
         {NAV_ITEMS.map((item) => {
           const active = isActive(pathname, item.href);
@@ -19,7 +19,7 @@ export default function BottomNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={`flex h-16 flex-col items-center justify-center gap-1 text-xs ${
-                  active ? "font-semibold text-emerald-700 dark:text-emerald-400" : "text-zinc-500"
+                  active ? "font-semibold text-khaki-300" : "text-khaki-100/70"
                 }`}
               >
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import PublicHeader from "@/components/public-header";
 
 export const metadata: Metadata = { title: "개인정보 처리방침 · 복무로그" };
 
@@ -23,18 +23,12 @@ const PROCESSORS = [
 export default function PrivacyPage() {
   return (
     <div className="flex flex-1 flex-col">
-      <header className="border-b border-zinc-200 dark:border-zinc-800">
-        <div className="mx-auto flex h-16 max-w-3xl items-center px-4 md:px-8">
-          <Link href="/" className="text-lg font-bold text-emerald-800 dark:text-emerald-400">
-            복무로그
-          </Link>
-        </div>
-      </header>
+      <PublicHeader maxWidth="max-w-3xl" />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 md:px-8 md:py-14">
         <h1 className="text-3xl font-bold">개인정보 처리방침</h1>
-        <p className="mt-2 text-sm text-zinc-500">시행일: {EFFECTIVE_DATE}</p>
-        <p className="mt-6 leading-7 text-zinc-700 dark:text-zinc-300">
+        <p className="mt-2 text-sm text-sand-500">시행일: {EFFECTIVE_DATE}</p>
+        <p className="mt-6 leading-7 text-sand-700 dark:text-sand-300">
           복무로그는 장병의 자기계발 기록을 돕기 위해 꼭 필요한 정보만 받아요. 실명, 군번, 생년월일, 부대명, 부대 위치, 훈련
           일정은 받지 않아요.
         </p>
@@ -42,14 +36,14 @@ export default function PrivacyPage() {
         <Section title="1. 받는 정보와 쓰는 곳">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] text-left text-sm">
-              <thead className="text-zinc-500">
-                <tr className="border-b border-zinc-200 dark:border-zinc-800">
+              <thead className="text-sand-500">
+                <tr className="border-b border-sand-200 dark:border-sand-800">
                   <th className="py-2 pr-4 font-medium">항목</th>
                   <th className="py-2 pr-4 font-medium">쓰는 곳</th>
                   <th className="py-2 font-medium">받는 때</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tbody className="divide-y divide-sand-200 dark:divide-sand-800">
                 {ITEMS.map((r) => (
                   <tr key={r.item}>
                     <td className="py-3 pr-4 font-medium">{r.item}</td>
@@ -90,7 +84,7 @@ export default function PrivacyPage() {
         {CONTACT && (
           <Section title="6. 문의">
             <p>
-              개인정보 관련 문의: <a href={`mailto:${CONTACT}`} className="text-emerald-700 underline dark:text-emerald-400">{CONTACT}</a>
+              개인정보 관련 문의: <a href={`mailto:${CONTACT}`} className="text-army-700 underline dark:text-army-400">{CONTACT}</a>
             </p>
           </Section>
         )}
@@ -103,7 +97,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="mt-10">
       <h2 className="text-lg font-semibold">{title}</h2>
-      <div className="mt-3 space-y-3 leading-7 text-zinc-700 dark:text-zinc-300">{children}</div>
+      <div className="mt-3 space-y-3 leading-7 text-sand-700 dark:text-sand-300">{children}</div>
     </section>
   );
 }

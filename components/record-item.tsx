@@ -5,7 +5,7 @@ import { deleteRecord, updateRecord, type ActionState } from "@/lib/actions";
 import type { ActivityRecord, Goal } from "@/lib/types";
 import ActionMessage from "./action-message";
 
-const INPUT = "h-10 w-full rounded-lg border border-zinc-300 bg-transparent px-3 text-sm dark:border-zinc-700";
+const INPUT = "h-10 w-full rounded-lg border border-sand-300 bg-transparent px-3 text-sm dark:border-sand-700";
 
 // 기록 한 건: 보기 ↔ 수정, 삭제 (목표 상세·대시보드 잔디 패널 공용)
 export default function RecordItem({
@@ -30,7 +30,7 @@ export default function RecordItem({
 
   if (editing) {
     return (
-      <form action={update} className="flex flex-col gap-2 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-900">
+      <form action={update} className="flex flex-col gap-2 rounded-xl bg-sand-50 p-3 dark:bg-sand-900">
         <input type="hidden" name="id" value={record.id} />
         <div className="grid gap-2 sm:grid-cols-[1fr_120px]">
           <input name="content" defaultValue={record.content} required maxLength={200} aria-label="한 일" className={INPUT} />
@@ -49,10 +49,10 @@ export default function RecordItem({
         </div>
         <ActionMessage state={updateState?.ok ? null : updateState} />
         <div className="flex justify-end gap-2">
-          <button type="button" onClick={() => setEditing(false)} className="h-10 rounded-lg px-4 text-sm hover:bg-zinc-200 dark:hover:bg-zinc-800">
+          <button type="button" onClick={() => setEditing(false)} className="h-10 rounded-lg px-4 text-sm hover:bg-sand-200 dark:hover:bg-sand-800">
             취소
           </button>
-          <button type="submit" disabled={updating} className="h-10 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white disabled:opacity-60">
+          <button type="submit" disabled={updating} className="h-10 rounded-lg bg-army-700 px-4 text-sm font-semibold text-white disabled:opacity-60">
             {updating ? "저장 중..." : "저장"}
           </button>
         </div>
@@ -65,14 +65,14 @@ export default function RecordItem({
       <div className="group flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="break-words">{record.content}</p>
-          {showDate && <p className="text-xs text-zinc-500">{record.date.replaceAll("-", ".")}</p>}
+          {showDate && <p className="text-xs text-sand-500">{record.date.replaceAll("-", ".")}</p>}
         </div>
         <div className="flex shrink-0 items-center gap-1 text-sm">
-          {record.minutes && <span className="mr-2 text-zinc-500">{record.minutes}분</span>}
+          {record.minutes && <span className="mr-2 text-sand-500">{record.minutes}분</span>}
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="h-9 rounded-lg px-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="h-9 rounded-lg px-2 text-sand-600 hover:bg-sand-100 dark:text-sand-400 dark:hover:bg-sand-800"
           >
             수정
           </button>

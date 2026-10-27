@@ -5,7 +5,7 @@ import { createRecord, type ActionState } from "@/lib/actions";
 import type { Goal } from "@/lib/types";
 import ActionMessage from "./action-message";
 
-const INPUT = "h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700";
+const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 const QUICK_MINUTES = [15, 30, 60, 120];
 
 export default function RecordForm({
@@ -47,9 +47,9 @@ export default function RecordForm({
           maxLength={200}
           rows={3}
           placeholder="예: 필기 기출 1회분 풀이"
-          className="w-full rounded-xl border border-zinc-300 bg-transparent p-3 dark:border-zinc-700"
+          className="w-full rounded-xl border border-sand-300 bg-transparent p-3 dark:border-sand-700"
         />
-        <span className="text-xs font-normal text-zinc-500">부대명, 위치, 훈련 일정은 적지 마세요.</span>
+        <span className="text-xs font-normal text-sand-500">부대명, 위치, 훈련 일정은 적지 마세요.</span>
       </label>
 
       <fieldset>
@@ -62,8 +62,8 @@ export default function RecordForm({
               onClick={() => setMinutes(String(m))}
               className={`h-10 flex-1 rounded-full text-sm ${
                 minutes === String(m)
-                  ? "bg-emerald-700 text-white"
-                  : "border border-zinc-300 dark:border-zinc-700"
+                  ? "bg-army-700 text-white"
+                  : "border border-sand-300 dark:border-sand-700"
               }`}
             >
               {m < 60 ? `${m}분` : `${m / 60}시간`}
@@ -88,7 +88,7 @@ export default function RecordForm({
       <button
         type="submit"
         disabled={pending}
-        className="h-12 rounded-xl bg-emerald-700 font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
+        className="h-12 rounded-xl bg-army-700 font-semibold text-white hover:bg-army-800 disabled:opacity-60"
       >
         {pending ? "저장 중..." : "기록하기"}
       </button>

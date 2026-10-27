@@ -1,27 +1,70 @@
 @import "tailwindcss";
 
+/* 복무로그 디자인 토큰 — 밀리터리 감성
+   army  : 군복 올리브 (주 색, 700 = #4B5320)
+   khaki : 카키 (강조·배지, 300 = #C3B091)
+   sand  : 모래색 중립 (글자·테두리·배경, 기존 회색 대신) */
+@theme {
+  --color-army-50: #f4f5ec;
+  --color-army-100: #e6e9d3;
+  --color-army-200: #ced4aa;
+  --color-army-300: #b0b97a;
+  --color-army-400: #919d52;
+  --color-army-500: #73803a;
+  --color-army-600: #5b662d;
+  --color-army-700: #4b5320;
+  --color-army-800: #3d431c;
+  --color-army-900: #2f3417;
+  --color-army-950: #1a1d0c;
+
+  --color-khaki-100: #f1ebdd;
+  --color-khaki-200: #e0d4ba;
+  --color-khaki-300: #c3b091;
+  --color-khaki-400: #ad9873;
+  --color-khaki-500: #94805c;
+  --color-khaki-600: #786848;
+
+  --color-sand-50: #faf8f2;
+  --color-sand-100: #f3efe3;
+  --color-sand-200: #e6dfcc;
+  --color-sand-300: #d4c9ad;
+  --color-sand-400: #b5a785;
+  --color-sand-500: #8f8264;
+  --color-sand-600: #6e6450;
+  --color-sand-700: #544c3e;
+  --color-sand-800: #3a352c;
+  --color-sand-900: #26231d;
+  --color-sand-950: #16140f;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f3ea;
+  --foreground: #26231d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plex-kr), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-stencil: var(--font-black-ops), var(--font-plex-kr), sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #12140c;
+    --foreground: #ece6d6;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
+}
+
+/* 은은한 우드랜드 위장 무늬 (전역 카드·히어로 배경용). 검정·갈색·밝은 카키 세 겹의 불규칙한 조각 */
+.camo {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%231a1d0c' fill-opacity='0.28'%3E%3Cpath d='M0 30l22-14 30 6 18-10 26 12-8 20-30 4-14 16-30-6-14-14z'/%3E%3Cpath d='M120 0l34 8 20-6 28 14-6 22-34 2-22 14-24-10 4-24z'/%3E%3Cpath d='M70 110l28-12 36 8 14 20-18 18-32-2-20 14-22-14 6-18z'/%3E%3Cpath d='M180 150l30-8 30 10v30l-24 10-30-6-14-20z'/%3E%3Cpath d='M10 180l26-6 22 14 30-4 8 22-26 14-34-4-20-16z'/%3E%3Cpath d='M150 220l26-10 28 8 10 22h-70z'/%3E%3C/g%3E%3Cg fill='%235b4a2a' fill-opacity='0.30'%3E%3Cpath d='M40 60l30-8 24 12 10 24-26 10-30-6-14-16z'/%3E%3Cpath d='M170 70l28-10 26 6 16 20-14 18-30 2-22-12z'/%3E%3Cpath d='M100 170l22-12 28 4 12 20-20 14-30-4z'/%3E%3Cpath d='M0 120l24-4 18 16-8 20-26 4-8-10z'/%3E%3Cpath d='M210 110l30 4v28l-22 6-18-16z'/%3E%3C/g%3E%3Cg fill='%23c3b091' fill-opacity='0.12'%3E%3Cpath d='M90 40l20-8 20 8-4 16-22 4-16-8z'/%3E%3Cpath d='M20 140l18-6 16 10-6 14-20 2-10-10z'/%3E%3Cpath d='M150 120l18-8 18 8-2 16-22 2-12-8z'/%3E%3Cpath d='M60 210l20-6 16 10-8 14-22-2z'/%3E%3Cpath d='M200 30l18-4 14 10-6 14-20 0z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 240px 240px;
 }

@@ -29,8 +29,8 @@ export default function GoalStatusButtons({ id, status }: { id: string; status: 
               disabled={pending}
               className={`h-12 w-full rounded-xl font-semibold disabled:opacity-60 ${
                 n.status === "done"
-                  ? "bg-emerald-700 text-white"
-                  : "border border-zinc-300 dark:border-zinc-700"
+                  ? "bg-army-700 text-white"
+                  : "border border-sand-300 dark:border-sand-700"
               }`}
             >
               {n.label}

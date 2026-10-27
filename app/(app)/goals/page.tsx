@@ -23,7 +23,7 @@ export default async function GoalsPage({ searchParams }: PageProps<"/goals">) {
     <main className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold md:text-3xl">목표</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-sand-500">
           진행 중 {goals.filter((g) => g.status === "in_progress").length}개 · 완료{" "}
           {goals.filter((g) => g.status === "done").length}개
         </p>
@@ -38,8 +38,8 @@ export default async function GoalsPage({ searchParams }: PageProps<"/goals">) {
                 href={c.key ? `/goals?category=${c.key}` : "/goals"}
                 className={`inline-flex h-10 shrink-0 items-center rounded-full px-4 text-sm ${
                   selected === c.key
-                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                    : "border border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+                    ? "bg-army-800 font-semibold text-khaki-100 dark:bg-khaki-300 dark:text-army-900"
+                    : "border border-sand-300 hover:bg-sand-50 dark:border-sand-700 dark:hover:bg-sand-900"
                 }`}
               >
                 {c.label}
@@ -48,7 +48,7 @@ export default async function GoalsPage({ searchParams }: PageProps<"/goals">) {
           </nav>
 
           {shown.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-zinc-300 py-16 text-center text-sm text-zinc-500 dark:border-zinc-700">
+            <p className="rounded-2xl border border-dashed border-sand-300 py-16 text-center text-sm text-sand-500 dark:border-sand-700">
               아직 목표가 없어요. 첫 목표를 만들어 보세요.
             </p>
           ) : (

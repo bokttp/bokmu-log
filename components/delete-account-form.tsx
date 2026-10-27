@@ -18,7 +18,7 @@ export default function DeleteAccountForm() {
       }}
       className="flex flex-col gap-3"
     >
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-sand-600 dark:text-sand-400">
         탈퇴하면 계정, 복무 정보, 모든 목표와 기록이 바로 지워지고 되돌릴 수 없어요.
       </p>
       <label className="flex flex-col gap-1 text-sm font-medium">
@@ -28,7 +28,7 @@ export default function DeleteAccountForm() {
           value={confirmText}
           onChange={(e) => setConfirmText(e.target.value)}
           autoComplete="off"
-          className="h-12 rounded-xl border border-zinc-300 bg-transparent px-4 md:max-w-xs dark:border-zinc-700"
+          className="h-12 rounded-xl border border-sand-300 bg-transparent px-4 md:max-w-xs dark:border-sand-700"
         />
       </label>
       <ActionMessage state={state} />
