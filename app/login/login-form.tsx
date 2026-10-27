@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error" | "rate_limited">("idle");
 
   const redirectTo = () => `${window.location.origin}/auth/callback`;
   const isConfigured = Boolean(
@@ -30,7 +30,9 @@ export default function LoginForm() {
       email,
       options: { emailRedirectTo: redirectTo() },
     });
-    setStatus(error ? "error" : "sent");
+    // 메일 발송 한도 초과(429). Supabase 기본 메일은 프로젝트 전체 1시간 2통이다.
+    if (error?.status === 429 || error?.code === "over_email_send_rate_limit") setStatus("rate_limited");
+    else setStatus(error ? "error" : "sent");
   }
 
   if (status === "sent") {
@@ -110,6 +112,12 @@ export default function LoginForm() {
       {status === "error" && (
         <p className="text-sm text-red-600 dark:text-red-400">
           요청에 실패했어요. 잠시 후 다시 시도해 주세요.
+        </p>
+      )}
+      {status === "rate_limited" && (
+        <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          지금은 로그인 메일을 보낼 수 없어요. 짧은 시간에 요청이 많았어요. 최대 1시간 뒤에 다시 시도해 주세요. 이미 받은
+          로그인 메일이 있다면 그 링크를 눌러도 돼요.
         </p>
       )}
     </div>

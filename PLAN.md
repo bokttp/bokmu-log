@@ -75,6 +75,8 @@
 - [x] 처리방침 문의 이메일: bokttp1@gmail.com (`app/privacy/page.tsx` 기본값, 환경변수 `NEXT_PUBLIC_CONTACT_EMAIL`로 바꿀 수 있음)
 - [x] 회원 탈퇴 — 설정 화면, "탈퇴" 입력 + 확인 창, service role로 `auth.users` 삭제 → 모든 데이터 cascade 삭제
 - [ ] 회원 탈퇴 실제 동작 확인 (두 번째 이메일 계정으로 가입 후 탈퇴해 볼 것)
+- [x] 로그인 메일 한도 초과(429) 시 이유 안내 (2026-10-27 실제 발생: Supabase 기본 메일은 프로젝트 전체 1시간 2통, 변경 불가)
+- [ ] **베타 테스트 전 필수**: 맞춤 SMTP(예: Resend) 연결로 메일 한도 늘리기 — Supabase Authentication → Emails → SMTP Settings
 - [ ] 지인 3명 베타 테스트
 - [ ] **MVP 완료**
 
