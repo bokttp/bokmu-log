@@ -2,12 +2,12 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
+import { getProfile } from "@/lib/data";
 import SiteHeader from "@/components/site-header";
 import BottomNav from "@/components/bottom-nav";
 
 // 로그인 필수 영역. proxy.ts가 먼저 막지만, 서버에서 한 번 더 확인한다.
 // 데모 모드(Supabase 키 없는 로컬)에서는 로그인 없이 예시 데이터로 보여준다.
-// 온보딩 확인은 2주차에 추가한다.
 
 // 로그인 영역은 매 요청 사용자 데이터를 읽으므로 "즉시 이동" 검사에서 제외한다.
 // (Next.js 문서 'Authentication with Cache Components'의 마이그레이션 방법)
@@ -23,6 +23,10 @@ async function RequireUser({ children }: { children: React.ReactNode }) {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+
+  // 복무 정보를 아직 입력하지 않았으면 온보딩으로 (F-02)
+  const profile = await getProfile();
+  if (!profile?.onboarded) redirect("/onboarding");
 
   return children;
 }

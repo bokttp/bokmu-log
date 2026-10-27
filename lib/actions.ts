@@ -1,9 +1,10 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { isDemoMode } from "./demo";
-import type { Branch, GoalCategory, GoalStatus } from "./types";
+import { BRANCH_LABELS, type Branch, type GoalCategory, type GoalStatus } from "./types";
 
 // 저장·수정·삭제 서버 액션. 데모 모드에서는 저장하지 않고 안내만 돌려준다.
 
@@ -67,14 +68,17 @@ export async function updateGoalStatus(_: ActionState, form: FormData): Promise<
   return { ok: true, message: "상태를 바꿨어요." };
 }
 
-export async function updateProfile(_: ActionState, form: FormData): Promise<ActionState> {
+// 프로필 저장 공통 처리 (설정·온보딩). 저장하면 온보딩 완료로 표시한다.
+async function saveProfile(form: FormData): Promise<ActionState> {
   const nickname = text(form.get("nickname"));
   const branch = text(form.get("branch")) as Branch;
   const enlistDate = text(form.get("enlist_date"));
   const dischargeDate = text(form.get("discharge_date"));
 
   if (nickname.length < 2 || nickname.length > 12) return { ok: false, message: "닉네임은 2~12자로 적어 주세요." };
-  if (!enlistDate || !dischargeDate || dischargeDate <= enlistDate) {
+  if (!(branch in BRANCH_LABELS)) return { ok: false, message: "군종을 골라 주세요." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(enlistDate)) return { ok: false, message: "입대일을 확인해 주세요." };
+  if (!dischargeDate || dischargeDate <= enlistDate) {
     return { ok: false, message: "전역일은 입대일보다 뒤여야 해요." };
   }
   if (isDemoMode()) return DEMO;
@@ -89,6 +93,18 @@ export async function updateProfile(_: ActionState, form: FormData): Promise<Act
     .update({ nickname, branch, enlist_date: enlistDate, discharge_date: dischargeDate, onboarded: true })
     .eq("id", user.id);
   if (error) return FAIL;
-  refresh();
   return { ok: true, message: "저장했어요." };
+}
+
+export async function updateProfile(_: ActionState, form: FormData): Promise<ActionState> {
+  const result = await saveProfile(form);
+  if (result?.ok) refresh();
+  return result;
+}
+
+// 온보딩: 저장에 성공하면 대시보드로 이동한다 (데모 모드도 이동만 한다)
+export async function completeOnboarding(_: ActionState, form: FormData): Promise<ActionState> {
+  const result = await saveProfile(form);
+  if (result?.ok) redirect("/dashboard");
+  return result;
 }

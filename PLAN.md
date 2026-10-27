@@ -45,8 +45,8 @@
 
 - [x] `lib/service.ts` 작성 — 전역일·복무율·D-day·진급일 (명세 7.1, 7.2)
 - [x] Vitest 단위 테스트 통과 (명세 7.5) — 8개
-- [ ] `/onboarding` 폼(닉네임·군종·입대일·전역일 확인), 저장 시 `onboarded = true`
-- [ ] 미온보딩 사용자 `/onboarding` 리다이렉트
+- [x] `/onboarding` 폼(닉네임·군종·입대일·전역일 확인), 저장 시 `onboarded = true` 후 대시보드로 이동
+- [x] 미온보딩 사용자 `/onboarding` 리다이렉트 (`app/(app)/layout.tsx`), 이미 마친 사용자는 `/onboarding` → `/dashboard`
 - [ ] 대시보드 전역 카드 — D-day, 복무율, 현재 계급, 다음 진급일 (데모 완료)
 - [ ] `/settings` 프로필 수정, 전역일 자동 계산 (데모 완료)
 - [ ] 배포 주소에서 확인
