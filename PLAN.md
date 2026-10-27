@@ -94,7 +94,7 @@
 - [x] 휴대폰 하단 탭 "더보기"(`/more`)에 독서·체력검정·적금·설정 모음
 - [x] 자격증·공부 화면 (목록·상세, 데모 확인), `lib/study.ts` + 테스트 7개
 - [x] `supabase/migrations/0004_certificates_study.sql` 작성, RLS 검사에 자격증·시험·과목 9개 항목 추가
-- [ ] `0004_certificates_study.sql` 운영 DB 실행 → RLS 검증 실패 0건 확인
+- [x] `0004_certificates_study.sql` 운영 DB 실행 → RLS 검증 32개 항목 실패 0건, 전부 롤백 (2026-10-27)
 - [ ] 배포 주소에서 2차 기능 실제 확인
 
 ## 배포 전 확인할 값
