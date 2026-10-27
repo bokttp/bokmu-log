@@ -23,12 +23,14 @@
 
 - [x] Node.js 24 LTS, Git 설치
 - [x] Next.js 16 프로젝트 생성, 로컬 git 첫 커밋
-- [ ] GitHub 저장소 생성, 푸시 (명세 8.2)
-- [ ] Vercel 연결, 첫 배포 확인 (명세 8.5)
-- [ ] Supabase 프로젝트 생성(서울 리전), 환경변수 등록 — 로컬 `.env.local`·Vercel (명세 8.3, 8.4)
+- [x] GitHub 비공개 저장소 `bokttp/bokmu-log` 생성, 푸시 (명세 8.2)
+- [x] Vercel 프로젝트 `bokmu-log` 생성, GitHub 연결 (main 푸시 = 자동 배포)
+- [ ] 첫 배포 확인 (명세 8.5)
+- [x] Supabase 프로젝트 `bokmu-log` 생성 (서울 ap-northeast-2)
+- [x] Vercel–Supabase 연동으로 환경변수 자동 등록 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 등)
+- [ ] 로컬 `.env.local` 설정 (선택 — 없으면 로컬은 데모 모드)
 - [x] `supabase/migrations/0001_init.sql`, `0002_rls.sql` 파일 작성
-- [ ] `0001_init.sql` 실행 (명세 5.2)
-- [ ] `0002_rls.sql` 실행 (명세 6.1)
+- [x] `0001_init.sql`, `0002_rls.sql` SQL Editor에서 실행 — 테이블 4개 RLS 켜짐 확인 (명세 5.2, 6.1)
 - [x] `lib/supabase/client.ts`, `server.ts`, `proxy.ts` + 루트 `proxy.ts` 작성
 - [x] 로그인 화면, `/auth/callback`, 로그아웃, 임시 대시보드 코드 작성 (`npm run build` 통과)
 - [ ] 이메일 매직링크 로그인·로그아웃, `/auth/callback` 실제 동작 확인
