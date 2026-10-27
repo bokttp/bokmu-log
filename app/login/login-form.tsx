@@ -65,19 +65,24 @@ export default function LoginForm() {
 
   return (
     <div className="mt-8 flex flex-col gap-4">
-      <button
-        type="button"
-        onClick={signInWithGoogle}
-        className="flex h-12 items-center justify-center rounded-xl border border-zinc-300 font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
-      >
-        Google로 계속하기
-      </button>
+      {/* Google 로그인은 Supabase에서 Google 공급자를 설정한 뒤 NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN=true로 켠다 */}
+      {process.env.NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN === "true" && (
+        <>
+          <button
+            type="button"
+            onClick={signInWithGoogle}
+            className="flex h-12 items-center justify-center rounded-xl border border-zinc-300 font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+          >
+            Google로 계속하기
+          </button>
 
-      <div className="flex items-center gap-3 text-sm text-zinc-500">
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-        또는
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-      </div>
+          <div className="flex items-center gap-3 text-sm text-zinc-500">
+            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+            또는
+            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+          </div>
+        </>
+      )}
 
       <form onSubmit={signInWithEmail} className="flex flex-col gap-3">
         <label htmlFor="email" className="text-sm font-medium">
