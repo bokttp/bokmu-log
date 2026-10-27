@@ -68,8 +68,9 @@ export default function RecordItem({
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="group flex items-start justify-between gap-3">
-        <div className="min-w-0">
+      {/* 좁은 자리(대시보드 잔디 옆 패널)에서는 시간·수정·삭제가 내용 아래로 내려간다 */}
+      <div className="group flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+        <div className="min-w-0 flex-1 basis-40">
           <p className="break-words">
             {targetLabel && (
               <span className="mr-2 rounded bg-khaki-200 px-1.5 py-0.5 text-xs font-semibold text-army-900 dark:bg-army-800 dark:text-khaki-200">
