@@ -6,7 +6,7 @@
 
 ## 현재 단계
 
-- **5~8주차 — 2차 기능** (코드·데모 완료. 남은 것: `0003_phase2.sql` 실행, RLS 재검증, 배포 후 실제 확인)
+- **5~8주차 — 2차 기능** (코드·데모·DB·RLS 완료. 남은 것: 배포 주소에서 실제 데이터로 확인)
 - 1~4주차 완료 (배포 주소에서 확인). 보류: Google 로그인, 비밀번호 찾기. 지인 베타 테스트는 건너뜀
 - 배포 주소: https://bokmu-log.vercel.app (main 푸시 = 자동 배포)
 - 2~4주차 화면은 데모 모드(예시 데이터)로 먼저 만들었다. `(데모 완료)` 표시 항목은 배포 사이트에서 실제 데이터로 동작을 확인하면 체크한다.
@@ -86,7 +86,7 @@
 
 - [x] `supabase/migrations/0003_phase2.sql` 작성 — `books`, `fitness_tests`, `app_settings` + RLS, `goals.exam_date·exam_result`
 - [x] `supabase/tests/rls_check.sql`에 2차 테이블 검사 9개 추가
-- [ ] `0003_phase2.sql` SQL Editor에서 실행 → RLS 검증 실패 0건 확인
+- [x] `0003_phase2.sql` SQL Editor에서 실행 → RLS 검증 23개 항목 실패 0건, 전부 롤백 (2026-10-27)
 - [ ] F-08 독서 기록 `/books` — 추가·삭제, 읽는 중/완독, 별점, 한줄평 (데모 완료)
 - [ ] F-09 체력검정 `/fitness` — 세 종목 기록·삭제, Recharts 종목별 선 그래프 (데모 완료)
 - [ ] F-07 자격증 시험일·결과 — 목표 상세에서 입력, 목표 카드에 시험 D-day·합격 표시 (데모 완료)
