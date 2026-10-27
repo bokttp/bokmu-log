@@ -1,0 +1,78 @@
+<title>복무로그 시연 영상</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=Black+Ops+One&display=swap">
+<style>
+  /* 한 열 레이아웃: 위에 제목, 가운데 영상, 아래 구간 목록(누르면 그 시점으로 이동) */
+  :root {
+    --bg: #f6f3ea; --surface: #ffffff; --fg: #26231d; --muted: #6e6450;
+    --line: #e6dfcc; --army: #4b5320; --army-deep: #3d431c; --khaki: #c3b091; --chip: #e0d4ba;
+    --font-body: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    --font-stencil: "Black Ops One", "IBM Plex Sans KR", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #12140c; --surface: #1d2012; --fg: #ece6d6; --muted: #b5a785;
+    --line: #3a352c; --army: #c3b091; --army-deep: #2f3417; --khaki: #c3b091; --chip: #3d431c; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #12140c; --surface: #1d2012; --fg: #ece6d6; --muted: #b5a785;
+    --line: #3a352c; --army: #c3b091; --army-deep: #2f3417; --khaki: #c3b091; --chip: #3d431c; color-scheme: dark }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+  .band { background: var(--army-deep); border-bottom: 4px solid var(--khaki); color: #f1ebdd; }
+  .wrap { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .band .wrap { padding-block: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand { font-weight: 700; font-size: 22px; }
+  .brand::before { content: "★ "; color: var(--khaki); }
+  .stencil { font-family: var(--font-stencil); letter-spacing: .08em; font-size: 13px; color: var(--khaki); }
+  main.wrap { padding-block: 28px 48px; display: flex; flex-direction: column; gap: 20px; }
+  h1 { font-size: clamp(24px, 4vw, 32px); margin: 0; text-wrap: balance; }
+  .lead { margin: 4px 0 0; color: var(--muted); max-width: 65ch; }
+  video { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; background: #000; display: block; box-shadow: 0 10px 30px rgba(26, 29, 12, .25); }
+  .note { font-size: 14px; color: var(--muted); margin: 0; }
+  h2 { font-size: 18px; margin: 8px 0 0; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+  ol button { width: 100%; display: flex; gap: 12px; align-items: center; text-align: left; padding: 10px 14px; min-height: 44px;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
+  ol button:hover { border-color: var(--army); }
+  ol button:focus-visible { outline: 2px solid var(--army); outline-offset: 2px; }
+  .t { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--army); min-width: 3.2em; }
+  .site { font-weight: 600; color: var(--army); overflow-wrap: anywhere; }
+</style>
+
+<div class="band"><div class="wrap"><span class="brand">복무로그</span><span class="stencil">BOKMU LOG · DEMO</span></div></div>
+
+<main class="wrap">
+  <div>
+    <h1>복무로그 시연 영상</h1>
+    <p class="lead">장병 자기계발 기록 서비스 복무로그의 주요 화면을 발표 시나리오 순서대로 보여줘요. 2분 55초, 자막과 내레이션이 있어요.</p>
+  </div>
+
+  <video id="demo" controls preload="metadata" playsinline src="bokmu-log-demo.mp4"></video>
+  <p class="note">예시 데이터가 들어 있는 데모 모드로 녹화했어요. 실제 서비스 주소: <span class="site">bokmu-log.vercel.app</span></p>
+
+  <h2>구간 바로가기</h2>
+  <ol id="chapters"></ol>
+</main>
+
+<script>
+  // 구간 시작 시각(초): 녹화 기록(timeline.json) 기준
+  const chapters = [
+    [0, "오프닝 · 문제 제기"], [29, "① 로그인"], [39, "② 대시보드"], [55, "③ 자격증 목록"],
+    [70, "④ 공부 기록 추가"], [80, "④ 시험 결과 입력"], [87, "⑤ 독서"], [94, "⑥ 체력검정 그래프"],
+    [106, "⑦ 적금 계산기"], [119, "⑧ 휴대폰 화면 · 다크 모드"], [127, "기술 · 보안 · 만든 과정"], [155, "마무리 · 다음 계획"],
+  ];
+  const video = document.getElementById("demo");
+  const list = document.getElementById("chapters");
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  for (const [sec, label] of chapters) {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = `<span class="t">${fmt(sec)}</span><span></span>`;
+    btn.lastChild.textContent = label;
+    btn.addEventListener("click", () => {
+      video.currentTime = sec;
+      video.play().catch(() => {});
+    });
+    li.appendChild(btn);
+    list.appendChild(li);
+  }
+</script>

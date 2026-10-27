@@ -40,6 +40,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# 발표용 시연 영상과 녹화 스크립트 (용량이 커서 저장소에 넣지 않는다)
-/video/
