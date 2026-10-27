@@ -1,20 +1,19 @@
 import { connection } from "next/server";
-import { getBooks, getGoals } from "@/lib/data";
+import { getBooks } from "@/lib/data";
 import { deleteBook } from "@/lib/actions";
 import { todayKST } from "@/lib/service";
 import type { Book } from "@/lib/types";
 import BookForm from "@/components/book-form";
 import AddPanel from "@/components/add-panel";
 import DeleteRowButton from "@/components/delete-row-button";
-import RelatedGoals from "@/components/related-goals";
 import { EmptyState, PageHeader, TwoColumn } from "@/components/page-frame";
 
 export const instant = false; // layout.tsx 참고
 
-// 독서 기록 (F-08). 목표·체력검정과 같은 틀: 요약 3칸, 왼쪽 카드 목록, 오른쪽 추가 + 관련 목표
+// 독서 기록 (F-08). 자격증·공부·체력검정과 같은 틀: 요약 3칸, 왼쪽 카드 목록, 오른쪽 추가
 export default async function BooksPage() {
   await connection();
-  const [books, goals] = await Promise.all([getBooks(), getGoals()]);
+  const books = await getBooks();
   const today = todayKST();
   const year = today.slice(0, 4);
   const finished = books.filter((b) => b.finished_on);
@@ -35,12 +34,9 @@ export default async function BooksPage() {
 
       <TwoColumn
         aside={
-          <>
-            <AddPanel label="책 추가">
-              <BookForm today={today} />
-            </AddPanel>
-            <RelatedGoals goals={goals} category="reading" today={today} emptyText="독서 목표 만들기" />
-          </>
+          <AddPanel label="책 추가">
+            <BookForm today={today} />
+          </AddPanel>
         }
       >
         {books.length === 0 ? (

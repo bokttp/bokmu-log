@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ActivityRecord, Goal } from "@/lib/types";
+import type { ActivityRecord, RecordTarget } from "@/lib/types";
 import RecordItem from "./record-item";
 
 type Cell = { date: string; future: boolean };
@@ -21,12 +21,14 @@ const label = (date: string) => `${Number(date.slice(5, 7))}월 ${Number(date.sl
 export default function RecordGrass({
   weeks,
   records,
-  goals,
+  targets,
+  names,
   today,
 }: {
   weeks: Cell[][]; // [주][요일]
   records: ActivityRecord[];
-  goals: Pick<Goal, "id" | "title">[]; // 기록 수정 때 고를 목표
+  targets: RecordTarget[]; // 기록 수정 때 고를 과목·자격증
+  names: Record<string, string>; // 기록 id → 붙은 곳 이름
   today: string;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
@@ -83,7 +85,7 @@ export default function RecordGrass({
               <ul className="mt-2 flex flex-col gap-2 text-sm">
                 {dayRecords.map((r) => (
                   <li key={r.id}>
-                    <RecordItem record={r} goals={goals} today={today} showDate={false} />
+                    <RecordItem record={r} targets={targets} today={today} showDate={false} targetName={names[r.id]} />
                   </li>
                 ))}
               </ul>

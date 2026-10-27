@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { getFitnessTests, getGoals } from "@/lib/data";
+import { getFitnessTests } from "@/lib/data";
 import { deleteFitnessTest } from "@/lib/actions";
 import { formatRun } from "@/lib/fitness";
 import { todayKST } from "@/lib/service";
@@ -7,15 +7,14 @@ import FitnessChart from "@/components/fitness-chart";
 import FitnessForm from "@/components/fitness-form";
 import AddPanel from "@/components/add-panel";
 import DeleteRowButton from "@/components/delete-row-button";
-import RelatedGoals from "@/components/related-goals";
 import { EmptyState, PageHeader, Panel, TwoColumn } from "@/components/page-frame";
 
 export const instant = false; // layout.tsx 참고
 
-// 체력검정 기록 (F-09). 목표·독서와 같은 틀: 요약 3칸(최근 기록), 왼쪽 그래프·기록표, 오른쪽 추가 + 관련 목표
+// 체력검정 기록 (F-09). 자격증·공부·독서와 같은 틀: 요약 3칸(최근 기록), 왼쪽 그래프·기록표, 오른쪽 추가
 export default async function FitnessPage() {
   await connection();
-  const [tests, goals] = await Promise.all([getFitnessTests(), getGoals()]);
+  const tests = await getFitnessTests();
   const today = todayKST();
   const latest = <K extends "pushups" | "situps" | "run_seconds">(key: K) =>
     [...tests].reverse().find((t) => t[key] !== null)?.[key] ?? null;
@@ -37,12 +36,9 @@ export default async function FitnessPage() {
 
       <TwoColumn
         aside={
-          <>
-            <AddPanel label="검정 결과 추가">
-              <FitnessForm today={today} />
-            </AddPanel>
-            <RelatedGoals goals={goals} category="exercise" today={today} emptyText="운동 목표 만들기" />
-          </>
+          <AddPanel label="검정 결과 추가">
+            <FitnessForm today={today} />
+          </AddPanel>
         }
       >
         {tests.length === 0 ? (

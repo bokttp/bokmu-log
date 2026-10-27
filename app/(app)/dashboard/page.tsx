@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { addDays, format, parseISO, startOfWeek, subWeeks } from "date-fns";
-import { getGoals, getProfile, getRecordsSince } from "@/lib/data";
+import { getCertificates, getProfile, getRecordsSince, getSubjects } from "@/lib/data";
 import { formatDday, rankStatus, serviceProgress, todayKST } from "@/lib/service";
+import { recordTargets, targetName } from "@/lib/study";
 import { BRANCH_LABELS } from "@/lib/types";
-import GoalCard from "@/components/goal-card";
+import CertificateCard from "@/components/certificate-card";
 import RecordGrass from "@/components/record-grass";
 import RankBadge from "@/components/rank-badge";
 import { Panel } from "@/components/page-frame";
@@ -26,9 +27,10 @@ export const instant = false;
 export default async function DashboardPage() {
   await connection(); // 오늘 날짜로 계산하는 화면이라 요청 시점에 그린다
   const weeks = grassWeeks(todayKST());
-  const [profile, goals, records] = await Promise.all([
+  const [profile, certificates, subjects, records] = await Promise.all([
     getProfile(),
-    getGoals(),
+    getCertificates(),
+    getSubjects(),
     getRecordsSince(weeks[0][0].date),
   ]);
   const today = todayKST();
@@ -36,8 +38,10 @@ export default async function DashboardPage() {
 
   const monthRecords = records.filter((r) => r.date.startsWith(month));
   const monthMinutes = monthRecords.reduce((sum, r) => sum + (r.minutes ?? 0), 0);
-  const monthDone = goals.filter((g) => g.status === "done" && g.completed_at?.startsWith(month)).length;
-  const activeGoals = goals.filter((g) => g.status === "in_progress");
+  const acquired = certificates.filter((c) => c.status === "acquired").length;
+  const preparing = certificates.filter((c) => c.status === "preparing");
+  const targets = recordTargets(subjects, certificates);
+  const names = Object.fromEntries(records.map((r) => [r.id, targetName(r, subjects, certificates) ?? ""]));
 
   return (
     <main className="flex flex-col gap-6">
@@ -72,7 +76,7 @@ export default async function DashboardPage() {
           <dl className="grid grid-cols-3 gap-2 text-center lg:grid-cols-1 lg:text-left">
             <Stat label="기록" value={`${monthRecords.length}건`} />
             <Stat label="총 시간" value={`${Math.round((monthMinutes / 60) * 10) / 10}시간`} />
-            <Stat label="완료 목표" value={`${monthDone}개`} />
+            <Stat label="취득 자격증" value={`${acquired}개`} />
           </dl>
         </Panel>
 
@@ -81,28 +85,29 @@ export default async function DashboardPage() {
           <RecordGrass
             weeks={weeks}
             records={records}
-            goals={goals.filter((g) => g.status === "in_progress")}
+            targets={targets}
+            names={names}
             today={today}
           />
         </Panel>
 
-        {/* 진행 중 목표 3개 */}
+        {/* 준비 중인 자격증 3개 (다가오는 시험 순) */}
         <Panel
-          title="진행 중인 목표"
+          title="준비 중인 자격증"
           action={
-            <Link href="/goals" className="text-sm text-army-700 hover:underline dark:text-army-400">
+            <Link href="/certificates" className="text-sm text-army-700 hover:underline dark:text-army-400">
               전체 보기
             </Link>
           }
         >
-          {activeGoals.length === 0 ? (
-            <Link href="/goals" className="block rounded-xl border border-dashed border-sand-300 p-5 text-center text-sm dark:border-sand-700">
-              첫 목표 만들기 →
+          {preparing.length === 0 ? (
+            <Link href="/certificates" className="block rounded-xl border border-dashed border-sand-300 p-5 text-center text-sm dark:border-sand-700">
+              준비할 자격증 추가하기 →
             </Link>
           ) : (
             <div className="flex flex-col gap-2">
-              {activeGoals.slice(0, 3).map((g) => (
-                <GoalCard key={g.id} goal={g} today={today} />
+              {preparing.slice(0, 3).map((c) => (
+                <CertificateCard key={c.id} cert={c} today={today} />
               ))}
             </div>
           )}

@@ -2,47 +2,39 @@
 
 import { useActionState, useState } from "react";
 import { createRecord, type ActionState } from "@/lib/actions";
-import type { Goal } from "@/lib/types";
+import type { RecordTarget } from "@/lib/types";
 import ActionMessage from "./action-message";
+import TargetSelect from "./target-select";
 
 const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 const QUICK_MINUTES = [15, 30, 60, 120];
 
-// 활동 기록 추가. 기록은 항상 목표 아래에 쌓인다.
-// goalId를 주면(목표 상세) 그 목표에 고정하고, 아니면(목표 목록) 진행 중인 목표에서 고른다.
+// 공부 기록 추가. 기록은 항상 과목 또는 자격증 아래에 쌓인다.
+// fixedTarget을 주면(과목·자격증 상세) 그곳에 고정하고, 아니면(공부 화면) 목록에서 고른다.
 export default function RecordForm({
-  goals,
+  targets,
   today,
-  goalId,
+  fixedTarget,
 }: {
-  goals: Pick<Goal, "id" | "title">[];
+  targets: RecordTarget[];
   today: string;
-  goalId?: string;
+  fixedTarget?: string;
 }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(createRecord, null);
   const [minutes, setMinutes] = useState("");
 
-  if (!goalId && goals.length === 0) {
-    return <p className="text-sm text-sand-500">진행 중인 목표가 없어요. 먼저 목표를 만들어 주세요.</p>;
+  if (!fixedTarget && targets.length === 0) {
+    return <p className="text-sm text-sand-500">공부 중인 과목이나 준비 중인 자격증이 없어요. 먼저 추가해 주세요.</p>;
   }
 
   return (
     <form action={action} className="flex flex-col gap-4">
-      {goalId ? (
-        <input type="hidden" name="goal_id" value={goalId} />
+      {fixedTarget ? (
+        <input type="hidden" name="target" value={fixedTarget} />
       ) : (
         <label className="flex flex-col gap-1 text-sm font-medium">
-          목표
-          <select name="goal_id" required defaultValue="" className={INPUT}>
-            <option value="" disabled>
-              목표를 골라 주세요
-            </option>
-            {goals.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.title}
-              </option>
-            ))}
-          </select>
+          무엇을 공부했나요?
+          <TargetSelect targets={targets} className={INPUT} />
         </label>
       )}
 

@@ -2,23 +2,36 @@
 
 import { useActionState, useState } from "react";
 import { deleteRecord, updateRecord, type ActionState } from "@/lib/actions";
-import type { ActivityRecord, Goal } from "@/lib/types";
+import type { ActivityRecord, RecordTarget } from "@/lib/types";
 import ActionMessage from "./action-message";
+import TargetSelect from "./target-select";
 
 const INPUT = "h-10 w-full rounded-lg border border-sand-300 bg-transparent px-3 text-sm dark:border-sand-700";
 
-// 기록 한 건: 보기 ↔ 수정, 삭제 (목표 상세·대시보드 잔디 패널 공용)
+// 공부 기록 한 건: 보기 ↔ 수정, 삭제 (공부·과목·자격증 상세, 대시보드 잔디 패널 공용)
+// targetName은 기록이 붙은 과목·자격증 이름. showTarget이면 내용 앞에 태그로 보여준다 (상세 화면에서는 숨긴다).
 export default function RecordItem({
   record,
-  goals,
+  targets,
   today,
   showDate = true,
+  targetName,
+  showTarget = true,
 }: {
   record: ActivityRecord;
-  goals: Pick<Goal, "id" | "title">[];
+  targets: RecordTarget[];
   today: string;
   showDate?: boolean;
+  targetName?: string | null;
+  showTarget?: boolean;
 }) {
+  const targetLabel = showTarget ? targetName : null;
+  const currentTarget = record.subject_id ? `s:${record.subject_id}` : record.certificate_id ? `c:${record.certificate_id}` : "";
+  // 보관·취득한 곳에 붙은 기록도 고칠 수 있게, 현재 연결된 곳을 목록에 넣어 둔다
+  const editTargets =
+    currentTarget && !targets.some((t) => t.key === currentTarget)
+      ? [...targets, { key: currentTarget, name: targetName ?? "현재 연결된 곳", type: record.subject_id ? ("subject" as const) : ("certificate" as const) }]
+      : targets;
   const [editing, setEditing] = useState(false);
   // 저장에 성공하면 보기 모드로 돌아간다
   const [updateState, update, updating] = useActionState<ActionState, FormData>(async (prev, form) => {
@@ -38,14 +51,7 @@ export default function RecordItem({
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           <input name="date" type="date" defaultValue={record.date} max={today} required aria-label="날짜" className={INPUT} />
-          <select name="goal_id" defaultValue={record.goal_id ?? ""} aria-label="목표" className={INPUT}>
-            <option value="">목표 없이 기록</option>
-            {goals.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.title}
-              </option>
-            ))}
-          </select>
+          <TargetSelect targets={editTargets} defaultValue={currentTarget} className={INPUT} />
         </div>
         <ActionMessage state={updateState?.ok ? null : updateState} />
         <div className="flex justify-end gap-2">
@@ -64,7 +70,14 @@ export default function RecordItem({
     <div className="flex flex-col gap-1">
       <div className="group flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="break-words">{record.content}</p>
+          <p className="break-words">
+            {targetLabel && (
+              <span className="mr-2 rounded bg-khaki-200 px-1.5 py-0.5 text-xs font-semibold text-army-900 dark:bg-army-800 dark:text-khaki-200">
+                {targetLabel}
+              </span>
+            )}
+            {record.content}
+          </p>
           {showDate && <p className="text-xs text-sand-500">{record.date.replaceAll("-", ".")}</p>}
         </div>
         <div className="flex shrink-0 items-center gap-1 text-sm">
