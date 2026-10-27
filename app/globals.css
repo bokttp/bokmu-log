@@ -68,3 +68,46 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%231a1d0c' fill-opacity='0.28'%3E%3Cpath d='M0 30l22-14 30 6 18-10 26 12-8 20-30 4-14 16-30-6-14-14z'/%3E%3Cpath d='M120 0l34 8 20-6 28 14-6 22-34 2-22 14-24-10 4-24z'/%3E%3Cpath d='M70 110l28-12 36 8 14 20-18 18-32-2-20 14-22-14 6-18z'/%3E%3Cpath d='M180 150l30-8 30 10v30l-24 10-30-6-14-20z'/%3E%3Cpath d='M10 180l26-6 22 14 30-4 8 22-26 14-34-4-20-16z'/%3E%3Cpath d='M150 220l26-10 28 8 10 22h-70z'/%3E%3C/g%3E%3Cg fill='%235b4a2a' fill-opacity='0.30'%3E%3Cpath d='M40 60l30-8 24 12 10 24-26 10-30-6-14-16z'/%3E%3Cpath d='M170 70l28-10 26 6 16 20-14 18-30 2-22-12z'/%3E%3Cpath d='M100 170l22-12 28 4 12 20-20 14-30-4z'/%3E%3Cpath d='M0 120l24-4 18 16-8 20-26 4-8-10z'/%3E%3Cpath d='M210 110l30 4v28l-22 6-18-16z'/%3E%3C/g%3E%3Cg fill='%23c3b091' fill-opacity='0.12'%3E%3Cpath d='M90 40l20-8 20 8-4 16-22 4-16-8z'/%3E%3Cpath d='M20 140l18-6 16 10-6 14-20 2-10-10z'/%3E%3Cpath d='M150 120l18-8 18 8-2 16-22 2-12-8z'/%3E%3Cpath d='M60 210l20-6 16 10-8 14-22-2z'/%3E%3Cpath d='M200 30l18-4 14 10-6 14-20 0z'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 240px 240px;
 }
+
+/* 상단 메뉴에서 달리는 병사 (components/running-soldier.tsx).
+   트랙(로고와 메뉴 사이 빈칸)을 왕복하고, 끝에 닿으면 뒤돌아 달린다. 발은 헤더 아래 카키 줄 위에 닿는다 */
+.runner-track {
+  position: relative;
+  flex: 1;
+  align-self: stretch;
+  margin: 0 1rem;
+  overflow: hidden;
+}
+.runner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 42px;
+  height: 56px;
+  animation: runner-patrol 9s linear infinite;
+}
+@keyframes runner-patrol {
+  0% { left: 0; transform: scaleX(1); }
+  49.9% { left: calc(100% - 42px); transform: scaleX(1); }
+  50% { left: calc(100% - 42px); transform: scaleX(-1); }
+  99.9% { left: 0; transform: scaleX(-1); }
+  100% { left: 0; transform: scaleX(1); }
+}
+/* 한 걸음에 한 번 위아래로 출렁 */
+.runner-body { animation: runner-bob 0.25s ease-in-out infinite alternate; }
+@keyframes runner-bob { to { transform: translateY(-2px); } }
+/* 팔다리: 0.5초마다 앞뒤 교대. 뒤쪽 팔다리는 반 박자 늦게 */
+.runner-thigh { transform-origin: 33px 47px; animation: runner-thigh 0.5s ease-in-out infinite alternate; }
+.runner-shin { transform-origin: 33px 58px; animation: runner-shin 0.5s ease-in-out infinite alternate; }
+.runner-arm { transform-origin: 34px 27px; animation: runner-arm 0.5s ease-in-out infinite alternate; }
+.runner-forearm { transform-origin: 34px 36px; transform: rotate(-75deg); }
+.runner-back { filter: brightness(0.7); }
+.runner-back .runner-thigh,
+.runner-back .runner-shin,
+.runner-back .runner-arm { animation-delay: -0.5s; }
+@keyframes runner-thigh { from { transform: rotate(-40deg); } to { transform: rotate(35deg); } }
+@keyframes runner-shin { from { transform: rotate(10deg); } to { transform: rotate(75deg); } }
+@keyframes runner-arm { from { transform: rotate(45deg); } to { transform: rotate(-45deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .runner, .runner * { animation: none !important; }
+}
