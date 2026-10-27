@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { addDays, format, parseISO, startOfWeek, subWeeks } from "date-fns";
+import { addDays, differenceInCalendarDays, format, parseISO, startOfWeek, subWeeks } from "date-fns";
 import { getCertificates, getProfile, getRecordsSince } from "@/lib/data";
 import { formatDday, rankStatus, serviceProgress, todayKST } from "@/lib/service";
-import { recordTargets, targetName } from "@/lib/study";
-import { BRANCH_LABELS } from "@/lib/types";
+import { hours, nextExam, recordTargets, studyStreak, targetName, weekStartOf } from "@/lib/study";
+import { BRANCH_LABELS, EXAM_STAGE_LABELS } from "@/lib/types";
 import CertificateCard from "@/components/certificate-card";
 import RecordGrass from "@/components/record-grass";
 import RankBadge from "@/components/rank-badge";
@@ -41,6 +41,14 @@ export default async function DashboardPage() {
   const preparing = certificates.filter((c) => c.status === "preparing");
   const targets = recordTargets(certificates);
   const names = Object.fromEntries(records.map((r) => [r.id, targetName(r, certificates) ?? ""]));
+  const week = records.filter((r) => r.date >= weekStartOf(today));
+  const weekMinutes = week.reduce((sum, r) => sum + (r.minutes ?? 0), 0);
+  const streak = studyStreak(records.map((r) => r.date), today);
+  // 준비 중인 자격증 중 가장 가까운 시험
+  const next = preparing
+    .map((cert) => ({ cert, exam: nextExam(cert.exams, today) }))
+    .filter((u): u is { cert: (typeof preparing)[number]; exam: NonNullable<ReturnType<typeof nextExam>> } => Boolean(u.exam?.exam_date))
+    .sort((a, b) => (a.exam.exam_date ?? "").localeCompare(b.exam.exam_date ?? ""))[0];
 
   return (
     <main className="flex flex-col gap-6">
@@ -70,13 +78,36 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* 이번 달 요약 */}
-        <Panel title={`${Number(month.slice(5))}월 요약`}>
-          <dl className="grid grid-cols-3 gap-2 text-center lg:grid-cols-1 lg:text-left">
-            <Stat label="기록" value={`${monthRecords.length}건`} />
-            <Stat label="총 시간" value={`${Math.round((monthMinutes / 60) * 10) / 10}시간`} />
-            <Stat label="취득 자격증" value={`${acquired}개`} />
-          </dl>
+        {/* 이번 주: 다음 시험 D-day + 공부 요약 */}
+        <Panel title="이번 주">
+          <div className="flex flex-col gap-3">
+            {next ? (
+              <Link
+                href={`/certificates/${next.cert.id}`}
+                className="flex items-center justify-between gap-3 rounded-xl bg-army-800 px-4 py-3 text-khaki-100 hover:bg-army-700 dark:bg-army-900"
+              >
+                <span className="min-w-0">
+                  <span className="block text-xs text-khaki-300">다음 시험</span>
+                  <span className="block truncate font-semibold">{next.cert.name}</span>
+                  <span className="text-xs text-khaki-200">
+                    {EXAM_STAGE_LABELS[next.exam.stage]} · {next.exam.exam_date!.replaceAll("-", ".")}
+                  </span>
+                </span>
+                <span className="shrink-0 font-stencil text-3xl tracking-wide">
+                  {formatDday(differenceInCalendarDays(parseISO(next.exam.exam_date!), parseISO(today)))}
+                </span>
+              </Link>
+            ) : (
+              <Link href="/certificates" className="block rounded-xl border border-dashed border-sand-300 p-4 text-center text-sm dark:border-sand-700">
+                시험 일정을 넣으면 D-day가 보여요 →
+              </Link>
+            )}
+            <dl className="grid grid-cols-3 gap-2 text-center lg:grid-cols-1 lg:text-left">
+              <Stat label="이번 주 공부" value={hours(weekMinutes)} sub={`연속 ${streak}일`} />
+              <Stat label={`${Number(month.slice(5))}월 기록`} value={`${monthRecords.length}건`} sub={hours(monthMinutes)} />
+              <Stat label="취득 자격증" value={`${acquired}개`} />
+            </dl>
+          </div>
         </Panel>
 
         {/* 기록 잔디 */}
@@ -197,11 +228,14 @@ function ServiceCard({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-xl border border-sand-200 bg-sand-100/70 py-3 lg:flex lg:items-center lg:justify-between lg:px-4 lg:py-4 dark:border-sand-800 dark:bg-sand-900">
+    <div className="rounded-xl border border-sand-200 bg-sand-100/70 py-3 lg:flex lg:items-center lg:justify-between lg:px-4 lg:py-3 dark:border-sand-800 dark:bg-sand-900">
       <dt className="text-xs text-sand-600 lg:text-sm dark:text-sand-400">{label}</dt>
-      <dd className="mt-1 font-bold text-army-800 lg:mt-0 lg:text-xl dark:text-khaki-200">{value}</dd>
+      <dd className="mt-1 lg:mt-0 lg:text-right">
+        <span className="font-bold text-army-800 lg:text-xl dark:text-khaki-200">{value}</span>
+        {sub && <span className="block text-xs text-sand-500">{sub}</span>}
+      </dd>
     </div>
   );
 }

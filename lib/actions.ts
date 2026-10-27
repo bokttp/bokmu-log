@@ -206,28 +206,41 @@ export async function deleteCertExam(_: ActionState, form: FormData): Promise<Ac
 }
 
 // ── 독서 (F-08) ───────────────────────────────────────────
-// 완독일이 비어 있으면 "읽는 중"이다.
-export async function createBook(_: ActionState, form: FormData): Promise<ActionState> {
+// 책 입력값 검사 (추가·수정 공통). 완독일이 비어 있으면 "읽는 중"이다.
+function parseBook(form: FormData) {
   const title = text(form.get("title"));
   const author = orNull(text(form.get("author")));
   const finishedOn = orNull(text(form.get("finished_on")));
   const rating = Number(text(form.get("rating"))) || null;
   const review = orNull(text(form.get("review")));
 
-  if (title.length < 1 || title.length > 100) return { ok: false, message: "책 제목은 1~100자로 적어 주세요." };
-  if (author && author.length > 60) return { ok: false, message: "저자는 60자까지 적을 수 있어요." };
-  if (finishedOn && !isDate(finishedOn)) return { ok: false, message: "완독일을 확인해 주세요." };
-  if (rating !== null && (!Number.isInteger(rating) || rating < 1 || rating > 5)) return { ok: false, message: "별점은 1~5점이에요." };
-  if (review && review.length > 100) return { ok: false, message: "한줄평은 100자까지 적을 수 있어요." };
+  if (title.length < 1 || title.length > 100) return { error: { ok: false, message: "책 제목은 1~100자로 적어 주세요." } };
+  if (author && author.length > 60) return { error: { ok: false, message: "저자는 60자까지 적을 수 있어요." } };
+  if (finishedOn && !isDate(finishedOn)) return { error: { ok: false, message: "완독일을 확인해 주세요." } };
+  if (rating !== null && (!Number.isInteger(rating) || rating < 1 || rating > 5)) return { error: { ok: false, message: "별점은 1~5점이에요." } };
+  if (review && review.length > 100) return { error: { ok: false, message: "한줄평은 100자까지 적을 수 있어요." } };
+  return { values: { title, author, finished_on: finishedOn, rating, review } };
+}
+
+export async function createBook(_: ActionState, form: FormData): Promise<ActionState> {
+  const { error: invalid, values } = parseBook(form);
+  if (invalid || !values) return invalid ?? FAIL;
   if (isDemoMode()) return DEMO;
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("books")
-    .insert({ title, author, finished_on: finishedOn, rating, review });
+  const { error } = await supabase.from("books").insert(values);
   if (error) return FAIL;
   refresh();
   return { ok: true, message: "책을 추가했어요." };
+}
+
+export async function updateBook(_: ActionState, form: FormData): Promise<ActionState> {
+  const { error: invalid, values } = parseBook(form);
+  if (invalid || !values) return invalid ?? FAIL;
+  const result = await updateOwnRow("books", text(form.get("id")), values);
+  if (result !== "ok") return result;
+  refresh();
+  return { ok: true, message: "책 기록을 고쳤어요." };
 }
 
 export async function deleteBook(_: ActionState, form: FormData): Promise<ActionState> {
@@ -238,8 +251,9 @@ export async function deleteBook(_: ActionState, form: FormData): Promise<Action
 }
 
 // ── 체력검정 (F-09) ───────────────────────────────────────
-// 세 종목 중 하나 이상 입력, 3km는 분·초로 받아 초로 저장한다.
-export async function createFitnessTest(_: ActionState, form: FormData): Promise<ActionState> {
+// 체력검정 입력값 검사 (추가·수정 공통). 세 종목 중 하나 이상 입력, 3km는 분·초로 받아 초로 저장한다.
+type FitnessValues = { tested_on: string; pushups: number | null; situps: number | null; run_seconds: number | null };
+function parseFitness(form: FormData): { error?: ActionState; values?: FitnessValues } {
   const testedOn = text(form.get("tested_on"));
   const count = (name: string) => {
     const v = text(form.get(name));
@@ -251,24 +265,38 @@ export async function createFitnessTest(_: ActionState, form: FormData): Promise
   const runSec = count("run_sec");
   const runSeconds = runMin === null && runSec === null ? null : (runMin ?? 0) * 60 + (runSec ?? 0);
 
-  if (!isDate(testedOn)) return { ok: false, message: "검정일을 확인해 주세요." };
-  if (pushups === null && situps === null && runSeconds === null) return { ok: false, message: "한 종목 이상 적어 주세요." };
+  const fail = (message: string) => ({ error: { ok: false, message } });
+  if (!isDate(testedOn)) return fail("검정일을 확인해 주세요.");
+  if (pushups === null && situps === null && runSeconds === null) return fail("한 종목 이상 적어 주세요.");
   for (const v of [pushups, situps]) {
-    if (v !== null && (!Number.isInteger(v) || v < 0 || v > 300)) return { ok: false, message: "횟수는 0~300회로 적어 주세요." };
+    if (v !== null && (!Number.isInteger(v) || v < 0 || v > 300)) return fail("횟수는 0~300회로 적어 주세요.");
   }
-  if (runSec !== null && (runSec < 0 || runSec > 59)) return { ok: false, message: "초는 0~59로 적어 주세요." };
+  if (runSec !== null && (runSec < 0 || runSec > 59)) return fail("초는 0~59로 적어 주세요.");
   if (runSeconds !== null && (!Number.isInteger(runSeconds) || runSeconds < 300 || runSeconds > 3600)) {
-    return { ok: false, message: "3km 기록은 5분~60분 사이로 적어 주세요." };
+    return fail("3km 기록은 5분~60분 사이로 적어 주세요.");
   }
+  return { values: { tested_on: testedOn, pushups, situps, run_seconds: runSeconds } };
+}
+
+export async function createFitnessTest(_: ActionState, form: FormData): Promise<ActionState> {
+  const { error: invalid, values } = parseFitness(form);
+  if (invalid || !values) return invalid ?? FAIL;
   if (isDemoMode()) return DEMO;
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("fitness_tests")
-    .insert({ tested_on: testedOn, pushups, situps, run_seconds: runSeconds });
+  const { error } = await supabase.from("fitness_tests").insert(values);
   if (error) return FAIL;
   refresh();
   return { ok: true, message: "체력검정 기록을 추가했어요." };
+}
+
+export async function updateFitnessTest(_: ActionState, form: FormData): Promise<ActionState> {
+  const { error: invalid, values } = parseFitness(form);
+  if (invalid || !values) return invalid ?? FAIL;
+  const result = await updateOwnRow("fitness_tests", text(form.get("id")), values);
+  if (result !== "ok") return result;
+  refresh();
+  return { ok: true, message: "체력검정 기록을 고쳤어요." };
 }
 
 export async function deleteFitnessTest(_: ActionState, form: FormData): Promise<ActionState> {

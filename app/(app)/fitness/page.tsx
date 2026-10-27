@@ -1,17 +1,16 @@
 import { connection } from "next/server";
 import { getFitnessTests } from "@/lib/data";
-import { deleteFitnessTest } from "@/lib/actions";
 import { formatRun } from "@/lib/fitness";
 import { todayKST } from "@/lib/service";
 import FitnessChart from "@/components/fitness-chart";
 import FitnessForm from "@/components/fitness-form";
+import FitnessRow from "@/components/fitness-row";
 import AddPanel from "@/components/add-panel";
-import DeleteRowButton from "@/components/delete-row-button";
 import { EmptyState, PageHeader, Panel, TwoColumn } from "@/components/page-frame";
 
 export const instant = false; // layout.tsx 참고
 
-// 체력검정 기록 (F-09). 자격증·공부·독서와 같은 틀: 요약 3칸(최근 기록), 왼쪽 그래프·기록표, 오른쪽 추가
+// 체력검정 기록 (F-09). 자격증·독서와 같은 틀: 요약 3칸(최근 기록), 왼쪽 그래프·기록표(수정·삭제), 오른쪽 추가
 export default async function FitnessPage() {
   await connection();
   const tests = await getFitnessTests();
@@ -55,20 +54,12 @@ export default async function FitnessPage() {
                       <th className="py-2 font-medium">팔굽혀펴기</th>
                       <th className="py-2 font-medium">윗몸일으키기</th>
                       <th className="py-2 font-medium">3km</th>
-                      <th className="py-2"><span className="sr-only">삭제</span></th>
+                      <th className="py-2"><span className="sr-only">수정·삭제</span></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-sand-200 dark:divide-sand-800">
                     {[...tests].reverse().map((t) => (
-                      <tr key={t.id}>
-                        <td className="py-2">{t.tested_on.replaceAll("-", ".")}</td>
-                        <td className="py-2">{t.pushups !== null ? `${t.pushups}회` : "-"}</td>
-                        <td className="py-2">{t.situps !== null ? `${t.situps}회` : "-"}</td>
-                        <td className="py-2">{t.run_seconds !== null ? formatRun(t.run_seconds) : "-"}</td>
-                        <td className="py-1 text-right">
-                          <DeleteRowButton id={t.id} action={deleteFitnessTest} confirmText="이 체력검정 기록을 지울까요? 되돌릴 수 없어요." />
-                        </td>
-                      </tr>
+                      <FitnessRow key={t.id} test={t} today={today} />
                     ))}
                   </tbody>
                 </table>

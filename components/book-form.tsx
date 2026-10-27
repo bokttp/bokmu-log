@@ -1,35 +1,42 @@
 "use client";
 
 import { useActionState } from "react";
-import { createBook, type ActionState } from "@/lib/actions";
+import { createBook, updateBook, type ActionState } from "@/lib/actions";
+import type { Book } from "@/lib/types";
 import ActionMessage from "./action-message";
 
 const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 
-// 책 추가 (F-08). 완독일을 비우면 "읽는 중"으로 저장된다.
-export default function BookForm({ today }: { today: string }) {
-  const [state, action, pending] = useActionState<ActionState, FormData>(createBook, null);
+// 책 추가·수정 (F-08). 완독일을 비우면 "읽는 중"으로 저장된다.
+// book을 주면 그 책을 고치는 폼이 되고, 저장에 성공하면 onDone을 부른다.
+export default function BookForm({ today, book, onDone }: { today: string; book?: Book; onDone?: () => void }) {
+  const [state, action, pending] = useActionState<ActionState, FormData>(async (prev, form) => {
+    const result = await (book ? updateBook : createBook)(prev, form);
+    if (result?.ok) onDone?.();
+    return result;
+  }, null);
 
   return (
     <form action={action} className="flex flex-col gap-3">
+      {book && <input type="hidden" name="id" value={book.id} />}
       <label className="flex flex-col gap-1 text-sm font-medium">
         제목
-        <input name="title" required maxLength={100} placeholder="예: 아주 작은 습관의 힘" className={INPUT} />
+        <input name="title" required maxLength={100} defaultValue={book?.title} placeholder="예: 아주 작은 습관의 힘" className={INPUT} />
       </label>
       <label className="flex flex-col gap-1 text-sm font-medium">
         저자 (선택)
-        <input name="author" maxLength={60} className={INPUT} />
+        <input name="author" maxLength={60} defaultValue={book?.author ?? ""} className={INPUT} />
       </label>
       <label className="flex flex-col gap-1 text-sm font-medium">
         완독일 (읽는 중이면 비워 두세요)
-        <input name="finished_on" type="date" max={today} className={INPUT} />
+        <input name="finished_on" type="date" max={today} defaultValue={book?.finished_on ?? ""} className={INPUT} />
       </label>
       <fieldset>
         <legend className="mb-2 text-sm font-medium">별점 (선택)</legend>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <label key={n} className="cursor-pointer">
-              <input type="radio" name="rating" value={n} className="peer sr-only" />
+              <input type="radio" name="rating" value={n} defaultChecked={book?.rating === n} className="peer sr-only" />
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-sand-300 text-sm peer-checked:border-army-700 peer-checked:bg-army-700 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-army-500 dark:border-sand-700">
                 {n}점
               </span>
@@ -39,12 +46,19 @@ export default function BookForm({ today }: { today: string }) {
       </fieldset>
       <label className="flex flex-col gap-1 text-sm font-medium">
         한줄평 (선택)
-        <input name="review" maxLength={100} placeholder="100자까지" className={INPUT} />
+        <input name="review" maxLength={100} defaultValue={book?.review ?? ""} placeholder="100자까지" className={INPUT} />
       </label>
-      <ActionMessage state={state} />
-      <button type="submit" disabled={pending} className="h-12 rounded-xl bg-army-700 font-semibold text-white hover:bg-army-800 disabled:opacity-60">
-        {pending ? "저장 중..." : "추가"}
-      </button>
+      <ActionMessage state={book && state?.ok ? null : state} />
+      <div className="flex gap-2">
+        {book && (
+          <button type="button" onClick={onDone} className="h-12 flex-1 rounded-xl border border-sand-300 dark:border-sand-700">
+            취소
+          </button>
+        )}
+        <button type="submit" disabled={pending} className="h-12 flex-1 rounded-xl bg-army-700 font-semibold text-white hover:bg-army-800 disabled:opacity-60">
+          {pending ? "저장 중..." : book ? "저장" : "추가"}
+        </button>
+      </div>
     </form>
   );
 }
