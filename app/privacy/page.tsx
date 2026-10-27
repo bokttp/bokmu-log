@@ -5,8 +5,8 @@ export const metadata: Metadata = { title: "개인정보 처리방침 · 복무�
 
 // 시행일. 내용을 바꾸면 날짜도 바꾼다.
 const EFFECTIVE_DATE = "2026년 10월 27일";
-// 문의 이메일은 Vercel 환경변수 NEXT_PUBLIC_CONTACT_EMAIL로 넣는다 (없으면 문의 줄을 숨긴다)
-const CONTACT = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
+// 개인정보 문의 이메일. 바꾸려면 Vercel 환경변수 NEXT_PUBLIC_CONTACT_EMAIL을 넣거나 아래 기본값을 고친다.
+const CONTACT = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "bokttp1@gmail.com";
 
 const ITEMS = [
   { item: "이메일 주소", purpose: "로그인 링크 발송, 계정 구분", when: "가입할 때" },

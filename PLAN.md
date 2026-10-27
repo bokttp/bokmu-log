@@ -73,7 +73,7 @@
 - [ ] 상단 메뉴(웹)·하단 탭(휴대폰), 다크 모드, 360px 가로 스크롤 없음 (데모 완료 — 1366px·375px에서 확인)
 - [x] RLS 검증 전부 통과 (명세 6.2) — `supabase/tests/rls_check.sql`, 가상 사용자 A·B·anon 15개 항목 실패 0건, 실행 후 전부 롤백 (2026-10-27)
 - [x] `/privacy` 개인정보 처리방침 페이지 (랜딩·로그인·설정에서 링크)
-- [ ] 문의 이메일 정하기 → Vercel 환경변수 `NEXT_PUBLIC_CONTACT_EMAIL` (없으면 처리방침의 문의 항목이 숨겨짐)
+- [x] 처리방침 문의 이메일: bokttp1@gmail.com (`app/privacy/page.tsx` 기본값, 환경변수 `NEXT_PUBLIC_CONTACT_EMAIL`로 바꿀 수 있음)
 - [x] 회원 탈퇴 — 설정 화면, "탈퇴" 입력 + 확인 창, service role로 `auth.users` 삭제 → 모든 데이터 cascade 삭제
 - [ ] 회원 탈퇴 실제 동작 확인 (두 번째 이메일 계정으로 가입 후 탈퇴해 볼 것)
 - [ ] 지인 3명 베타 테스트
