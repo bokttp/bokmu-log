@@ -53,7 +53,7 @@ export default async function BooksPage() {
   );
 }
 
-// 목표 카드와 같은 모양: 위에 상태 태그 + 오른쪽 값, 가운데 제목, 아래 보조 정보
+// 자격증 카드와 같은 모양: 위에 상태 태그 + 오른쪽 값, 가운데 제목, 아래 보조 정보
 function BookCard({ book }: { book: Book }) {
   return (
     <article className={`flex flex-col rounded-2xl border border-sand-200 bg-white/80 p-4 shadow-sm dark:border-sand-800 dark:bg-sand-900/60 ${book.finished_on ? "" : "ring-1 ring-khaki-300"}`}>

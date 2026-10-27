@@ -1,7 +1,6 @@
 import { addDays, format, parseISO, subDays } from "date-fns";
 import { calcDischargeDate } from "./service";
-import { weekStartOf } from "./study";
-import type { ActivityRecord, Book, CertExam, Certificate, FitnessTest, Profile, Subject } from "./types";
+import type { ActivityRecord, Book, CertExam, Certificate, FitnessTest, Profile } from "./types";
 
 // 데모 모드: Supabase 키가 없는 로컬 개발 환경에서만 예시 데이터로 화면을 보여준다.
 // 배포(production)에서는 절대 켜지지 않는다.
@@ -33,27 +32,23 @@ export function demoData(today: string) {
     { id: "e3", certificate_id: "c2", stage: "single", exam_date: d(today, -30), result: "pass", score: 82 },
     { id: "e4", certificate_id: "c3", stage: "written", exam_date: d(today, -45), result: "pass", score: 78 },
     { id: "e5", certificate_id: "c3", stage: "practical", exam_date: d(today, 17), result: "pending", score: null },
+    { id: "e6", certificate_id: "c4", stage: "single", exam_date: d(today, 60), result: "pending", score: null },
   ];
   const certBase: Omit<Certificate, "exams" | "minutes" | "record_count">[] = [
     { id: "c1", name: "정보처리기사", kind: "national_tech", issuer: "한국산업인력공단", status: "preparing", acquired_on: null, memo: "기출 10회분 풀기" },
     { id: "c3", name: "컴퓨터활용능력 1급", kind: "national_tech", issuer: "대한상공회의소", status: "preparing", acquired_on: null, memo: null },
+    { id: "c4", name: "토익 800점", kind: "language", issuer: "한국TOEIC위원회", status: "preparing", acquired_on: null, memo: null },
     { id: "c2", name: "한국사능력검정 2급", kind: "national_pro", issuer: "국사편찬위원회", status: "acquired", acquired_on: d(today, -9), memo: null },
-  ];
-
-  const subjectBase: Omit<Subject, "minutes" | "week_minutes" | "record_count">[] = [
-    { id: "s1", name: "토익", target: "800점", target_date: d(today, 110), archived: false },
-    { id: "s2", name: "파이썬", target: "기초 문법 끝내기", target_date: null, archived: false },
-    { id: "s3", name: "경제 공부", target: null, target_date: null, archived: false },
   ];
 
   // 최근 84일 기록. 날짜마다 0~3건이 규칙적으로 섞이게 만든다.
   const samples: Pick<ActivityRecord, "subject_id" | "certificate_id" | "content" | "minutes">[] = [
     { subject_id: null, certificate_id: "c1", content: "필기 기출 1회분 풀이", minutes: 60 },
-    { subject_id: "s1", certificate_id: null, content: "LC Part 2 단어 암기", minutes: 30 },
-    { subject_id: "s2", certificate_id: null, content: "반복문·함수 연습 문제", minutes: 45 },
+    { subject_id: null, certificate_id: "c4", content: "LC Part 2 단어 암기", minutes: 30 },
     { subject_id: null, certificate_id: "c3", content: "엑셀 함수 실기 연습", minutes: 50 },
     { subject_id: null, certificate_id: "c1", content: "데이터베이스 과목 오답 정리", minutes: 90 },
-    { subject_id: "s3", certificate_id: null, content: "경제 기사 한 편 정리", minutes: 20 },
+    { subject_id: null, certificate_id: "c4", content: "RC Part 5 문법 문제 30개", minutes: 40 },
+    { subject_id: null, certificate_id: "c3", content: "필기 기출 한 회 오답 정리", minutes: 20 },
   ];
   const records: ActivityRecord[] = [];
   for (let i = 0; i < 84; i++) {
@@ -65,15 +60,10 @@ export function demoData(today: string) {
   }
 
   const sum = (list: ActivityRecord[]) => list.reduce((t, r) => t + (r.minutes ?? 0), 0);
-  const weekStart = weekStartOf(today);
 
   const certificates: Certificate[] = certBase.map((c) => {
     const own = records.filter((r) => r.certificate_id === c.id);
     return { ...c, exams: exams.filter((e) => e.certificate_id === c.id), minutes: sum(own), record_count: own.length };
-  });
-  const subjects: Subject[] = subjectBase.map((s) => {
-    const own = records.filter((r) => r.subject_id === s.id);
-    return { ...s, minutes: sum(own), week_minutes: sum(own.filter((r) => r.date >= weekStart)), record_count: own.length };
   });
 
   const books: Book[] = [
@@ -92,5 +82,5 @@ export function demoData(today: string) {
     run_seconds: [870, 852, 840, 815, 798, 776][k],
   }));
 
-  return { profile, certificates, subjects, records, books, fitnessTests };
+  return { profile, certificates, records, books, fitnessTests };
 }

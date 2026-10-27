@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-// 오른쪽 패널의 "+ 추가" 버튼. 누르면 같은 자리에 폼이 펼쳐진다 (목표·기록·책·체력검정 공용).
+// 오른쪽 패널의 "+ 추가" 버튼. 누르면 같은 자리에 폼이 펼쳐진다 (자격증·공부 기록·책·체력검정 공용).
 export default function AddPanel({
   label,
   variant = "primary",

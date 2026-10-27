@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { addDays, format, parseISO, startOfWeek, subWeeks } from "date-fns";
-import { getCertificates, getProfile, getRecordsSince, getSubjects } from "@/lib/data";
+import { getCertificates, getProfile, getRecordsSince } from "@/lib/data";
 import { formatDday, rankStatus, serviceProgress, todayKST } from "@/lib/service";
 import { recordTargets, targetName } from "@/lib/study";
 import { BRANCH_LABELS } from "@/lib/types";
@@ -27,10 +27,9 @@ export const instant = false;
 export default async function DashboardPage() {
   await connection(); // 오늘 날짜로 계산하는 화면이라 요청 시점에 그린다
   const weeks = grassWeeks(todayKST());
-  const [profile, certificates, subjects, records] = await Promise.all([
+  const [profile, certificates, records] = await Promise.all([
     getProfile(),
     getCertificates(),
-    getSubjects(),
     getRecordsSince(weeks[0][0].date),
   ]);
   const today = todayKST();
@@ -40,8 +39,8 @@ export default async function DashboardPage() {
   const monthMinutes = monthRecords.reduce((sum, r) => sum + (r.minutes ?? 0), 0);
   const acquired = certificates.filter((c) => c.status === "acquired").length;
   const preparing = certificates.filter((c) => c.status === "preparing");
-  const targets = recordTargets(subjects, certificates);
-  const names = Object.fromEntries(records.map((r) => [r.id, targetName(r, subjects, certificates) ?? ""]));
+  const targets = recordTargets(certificates);
+  const names = Object.fromEntries(records.map((r) => [r.id, targetName(r, certificates) ?? ""]));
 
   return (
     <main className="flex flex-col gap-6">

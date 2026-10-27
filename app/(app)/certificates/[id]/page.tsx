@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCertificate, getCertificates, getSubjects } from "@/lib/data";
+import { getCertificate, getCertificates } from "@/lib/data";
 import { deleteCertificate } from "@/lib/actions";
 import { todayKST } from "@/lib/service";
 import { hours, recordTargets } from "@/lib/study";
@@ -18,11 +18,11 @@ export const instant = false; // layout.tsx 참고
 // 자격증 상세: 왼쪽 정보·상태·시험 단계, 오른쪽 이 자격증의 공부 기록
 export default async function CertificateDetailPage({ params }: PageProps<"/certificates/[id]">) {
   const { id } = await params;
-  const [result, certificates, subjects] = await Promise.all([getCertificate(id), getCertificates(), getSubjects()]);
+  const [result, certificates] = await Promise.all([getCertificate(id), getCertificates()]);
   if (!result) notFound();
   const { certificate: cert, records } = result;
   const today = todayKST();
-  const targets = recordTargets(subjects, certificates);
+  const targets = recordTargets(certificates);
   const studyDays = new Set(records.map((r) => r.date)).size;
 
   return (

@@ -33,7 +33,7 @@ const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 const isDate = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v);
 
 // 본인 행 한 건 삭제 공통 처리. RLS가 본인 행만 지우게 하고, 0건이면 찾을 수 없음으로 본다.
-type OwnTable = "records" | "books" | "fitness_tests" | "certificates" | "cert_exams" | "subjects";
+type OwnTable = "records" | "books" | "fitness_tests" | "certificates" | "cert_exams";
 async function deleteOwnRow(table: OwnTable, id: string): Promise<"ok" | ActionState> {
   if (isDemoMode()) return DEMO_DELETE;
   if (!isUuid(id)) return NOT_FOUND;
@@ -58,7 +58,7 @@ async function updateOwnRow(table: OwnTable, id: string, values: Record<string, 
 }
 
 // ── 공부 기록 ──────────────────────────────────────────────
-// 기록은 과목 또는 자격증 아래에 쌓인다. 폼의 target 값은 "s:<과목 id>" 또는 "c:<자격증 id>".
+// 기록은 자격증 아래에 쌓인다. 폼의 target 값은 "c:<자격증 id>" (예전 과목 기록을 고칠 때만 "s:<과목 id>").
 function parseRecord(form: FormData) {
   const content = text(form.get("content"));
   const date = text(form.get("date"));
@@ -68,7 +68,7 @@ function parseRecord(form: FormData) {
   if (content.length < 1 || content.length > 200) return { error: { ok: false, message: "내용은 1~200자로 적어 주세요." } };
   if (!isDate(date)) return { error: { ok: false, message: "날짜를 확인해 주세요." } };
   if (minutes !== null && (minutes < 1 || minutes > 1440)) return { error: { ok: false, message: "시간은 1~1440분으로 적어 주세요." } };
-  if (!targetId || (type !== "s" && type !== "c")) return { error: { ok: false, message: "과목이나 자격증을 골라 주세요." } };
+  if (!targetId || (type !== "s" && type !== "c")) return { error: { ok: false, message: "자격증을 골라 주세요." } };
   if (!isDemoMode() && !isUuid(targetId)) return { error: NOT_FOUND };
   return {
     values: {
@@ -203,39 +203,6 @@ export async function deleteCertExam(_: ActionState, form: FormData): Promise<Ac
   if (result !== "ok") return result;
   refresh();
   return { ok: true, message: "시험 일정을 지웠어요." };
-}
-
-// ── 공부 과목 ─────────────────────────────────────────────
-export async function createSubject(_: ActionState, form: FormData): Promise<ActionState> {
-  const name = text(form.get("name"));
-  const target = orNull(text(form.get("target")));
-  const targetDate = orNull(text(form.get("target_date")));
-
-  if (name.length < 1 || name.length > 30) return { ok: false, message: "과목 이름은 1~30자로 적어 주세요." };
-  if (target && target.length > 60) return { ok: false, message: "목표는 60자까지 적을 수 있어요." };
-  if (targetDate && !isDate(targetDate)) return { ok: false, message: "목표일을 확인해 주세요." };
-  if (isDemoMode()) return DEMO;
-
-  const supabase = await createClient();
-  const { error } = await supabase.from("subjects").insert({ name, target, target_date: targetDate });
-  if (error) return FAIL;
-  refresh();
-  return { ok: true, message: "과목을 추가했어요." };
-}
-
-// 공부를 마친 과목은 보관한다 (기록은 그대로 남는다)
-export async function setSubjectArchived(_: ActionState, form: FormData): Promise<ActionState> {
-  const archived = text(form.get("archived")) === "true";
-  const result = await updateOwnRow("subjects", text(form.get("id")), { archived });
-  if (result !== "ok") return result;
-  refresh();
-  return { ok: true, message: archived ? "과목을 보관했어요." : "다시 공부 중으로 바꿨어요." };
-}
-
-export async function deleteSubject(_: ActionState, form: FormData): Promise<ActionState> {
-  const result = await deleteOwnRow("subjects", text(form.get("id")));
-  if (result !== "ok") return result;
-  redirect("/study");
 }
 
 // ── 독서 (F-08) ───────────────────────────────────────────

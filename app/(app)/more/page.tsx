@@ -4,7 +4,6 @@ import { MORE_HREFS, NAV_ITEMS } from "@/components/nav-items";
 export const instant = false; // layout.tsx 참고
 
 const INFO: Record<string, { title: string; desc: string }> = {
-  "/fitness": { title: "체력검정", desc: "팔굽혀펴기·윗몸일으키기·3km 기록과 그래프" },
   "/savings": { title: "적금 계산기", desc: "장병내일준비적금 만기 금액 계산" },
   "/settings": { title: "설정", desc: "프로필, 비밀번호, 로그아웃, 탈퇴" },
 };

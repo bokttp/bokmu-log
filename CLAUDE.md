@@ -28,8 +28,8 @@
 app/
   page.tsx, login/, auth/callback/route.ts, onboarding/
   (app)/          # 로그인 + 온보딩 필수 영역, 하단 탭 레이아웃
-    dashboard/, certificates/, certificates/[id]/, study/, study/[id]/, books/, fitness/, savings/, settings/, more/(휴대폰 더보기)
-    goals/, records/new/   # 예전 주소 → /study 로 이동
+    dashboard/, certificates/, certificates/[id]/, books/, fitness/, savings/, settings/, more/(휴대폰 더보기)
+    goals/, study/, records/new/   # 예전 주소 → /certificates 로 이동
 components/       # 공통 UI
 lib/
   supabase/client.ts   # 브라우저용
@@ -64,7 +64,7 @@ npx supabase gen types typescript --project-id <id> > types/database.ts
 - 스키마 변경은 반드시 `supabase/migrations/`에 새 번호의 SQL 파일로 추가한다. 기존 마이그레이션 파일은 고치지 않는다.
 - UI는 웹사이트(넓은 화면) 기준으로 설계한다. 로그인 후 화면은 상단 메뉴 + 최대 폭 1152px(`max-w-6xl`), 넓은 화면에서는 여러 열 그리드를 쓴다. 휴대폰(`md` 미만)에서는 하단 탭으로 바뀌고 360px에서도 가로 스크롤이 없어야 한다.
 - 색은 `app/globals.css`의 팔레트만 쓴다: 주 색 `army-*`(군복 올리브), 강조 `khaki-*`, 중립 `sand-*`. Tailwind 기본 회색·초록(zinc, gray, emerald 등)은 쓰지 않는다. 오류는 `red-*`.
-- 목록 화면(자격증·공부·독서·체력검정)은 `components/page-frame.tsx`의 `PageHeader`(요약 3칸)·`TwoColumn`·`Panel`과 `add-panel.tsx`로 같은 틀을 쓴다. 공부 기록은 항상 과목 또는 자격증 아래에 추가한다 (폼 값 `target` = `s:<id>` / `c:<id>`). `goals` 표는 예전 데이터 보관용으로만 남아 있다.
+- 목록 화면(자격증·독서·체력검정)은 `components/page-frame.tsx`의 `PageHeader`(요약 3칸)·`TwoColumn`·`Panel`과 `add-panel.tsx`로 같은 틀을 쓴다. 공부 기록은 항상 자격증 아래에 추가한다 (폼 값 `target` = `c:<id>`). `goals`·`subjects` 표는 예전 데이터 보관용으로만 남아 있다 (새 화면을 만들지 않는다).
 - 글꼴: 본문 `font-sans`(IBM Plex Sans KR), D-day·숫자 강조 `font-stencil`(영문·숫자 전용). 위장 무늬 배경은 `.camo`, 계급장은 `components/rank-badge.tsx`.
 - 터치 영역 44px 이상, 본문 16px 이상, 다크 모드 지원. 빈 상태·로딩·오류 화면을 항상 만든다.
 - 화면 문구는 한국어, 해요체로 쓴다.

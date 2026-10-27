@@ -8,8 +8,8 @@ import TargetSelect from "./target-select";
 
 const INPUT = "h-10 w-full rounded-lg border border-sand-300 bg-transparent px-3 text-sm dark:border-sand-700";
 
-// 공부 기록 한 건: 보기 ↔ 수정, 삭제 (공부·과목·자격증 상세, 대시보드 잔디 패널 공용)
-// targetName은 기록이 붙은 과목·자격증 이름. showTarget이면 내용 앞에 태그로 보여준다 (상세 화면에서는 숨긴다).
+// 공부 기록 한 건: 보기 ↔ 수정, 삭제 (자격증 목록·상세, 대시보드 잔디 패널 공용)
+// targetName은 기록이 붙은 자격증(예전 기록은 과목) 이름. showTarget이면 내용 앞에 태그로 보여준다 (상세 화면에서는 숨긴다).
 export default function RecordItem({
   record,
   targets,

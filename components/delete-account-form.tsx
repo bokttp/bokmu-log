@@ -14,12 +14,12 @@ export default function DeleteAccountForm() {
     <form
       action={action}
       onSubmit={(e) => {
-        if (!confirm("정말 탈퇴할까요? 계정과 모든 목표·기록이 바로 지워지고 되돌릴 수 없어요.")) e.preventDefault();
+        if (!confirm("정말 탈퇴할까요? 계정과 모든 기록(자격증·공부·독서·체력검정)이 바로 지워지고 되돌릴 수 없어요.")) e.preventDefault();
       }}
       className="flex flex-col gap-3"
     >
       <p className="text-sm text-sand-600 dark:text-sand-400">
-        탈퇴하면 계정, 복무 정보, 모든 목표와 기록이 바로 지워지고 되돌릴 수 없어요.
+        탈퇴하면 계정, 복무 정보, 자격증·공부·독서·체력검정 기록이 모두 바로 지워지고 되돌릴 수 없어요.
       </p>
       <label className="flex flex-col gap-1 text-sm font-medium">
         확인을 위해 &ldquo;탈퇴&rdquo;를 입력하세요

@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { createClient } from "./supabase/server";
 import { demoData, isDemoMode } from "./demo";
 import { todayKST } from "./service";
-import { nextExam, weekStartOf } from "./study";
+import { nextExam } from "./study";
 import type {
   ActivityRecord,
   Book,
@@ -13,7 +13,6 @@ import type {
   FitnessTest,
   Profile,
   SavingsSettings,
-  Subject,
 } from "./types";
 
 // 화면에서 쓰는 데이터 조회. 데모 모드면 예시 데이터, 아니면 Supabase에서 읽는다.
@@ -63,40 +62,15 @@ export async function getCertificates(): Promise<Certificate[]> {
   return sortCertificates(list, today);
 }
 
-export async function getSubjects(): Promise<Subject[]> {
-  if (isDemoMode()) return (await demo()).subjects;
-
-  await connection(); // 이번 주 계산에 오늘 날짜를 쓴다
-  const weekStart = weekStartOf(todayKST());
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("subjects")
-    .select("id, name, target, target_date, archived, records(minutes, date)")
-    .order("archived")
-    .order("created_at");
-  return (data ?? []).map(({ records, ...s }) => {
-    const rows = (records ?? []) as { minutes: number | null; date: string }[];
-    return { ...s, minutes: sumMinutes(rows), week_minutes: sumMinutes(rows.filter((r) => r.date >= weekStart)), record_count: rows.length };
-  }) as Subject[];
-}
-
-// 한 자격증 또는 한 과목의 공부 기록, 최신순
-async function recordsOf(column: "certificate_id" | "subject_id", id: string): Promise<ActivityRecord[]> {
-  if (isDemoMode()) return (await demo()).records.filter((r) => r[column] === id);
-
-  const supabase = await createClient();
-  const { data } = await supabase.from("records").select(RECORD_COLUMNS).eq(column, id).order("date", { ascending: false });
-  return (data ?? []) as ActivityRecord[];
-}
-
+// 한 자격증과 그 공부 기록(최신순)
 export async function getCertificate(id: string) {
   const certificate = (await getCertificates()).find((c) => c.id === id);
-  return certificate ? { certificate, records: await recordsOf("certificate_id", id) } : null;
-}
+  if (!certificate) return null;
+  if (isDemoMode()) return { certificate, records: (await demo()).records.filter((r) => r.certificate_id === id) };
 
-export async function getSubject(id: string) {
-  const subject = (await getSubjects()).find((s) => s.id === id);
-  return subject ? { subject, records: await recordsOf("subject_id", id) } : null;
+  const supabase = await createClient();
+  const { data } = await supabase.from("records").select(RECORD_COLUMNS).eq("certificate_id", id).order("date", { ascending: false });
+  return { certificate, records: (data ?? []) as ActivityRecord[] };
 }
 
 // 독서 기록: 읽는 중(완독일 없음)이 위, 그다음 최근 완독 순 (F-08)
@@ -142,7 +116,7 @@ export async function getServicePeriods(): Promise<Record<Branch, number>> {
   return Object.fromEntries((data ?? []).map((p) => [p.branch, p.months])) as Record<Branch, number>;
 }
 
-// from 날짜(포함) 이후 기록, 최신순 (대시보드 잔디·공부 화면)
+// from 날짜(포함) 이후 기록, 최신순 (대시보드 잔디·자격증 화면)
 export async function getRecordsSince(from: string): Promise<ActivityRecord[]> {
   if (isDemoMode()) return (await demo()).records.filter((r) => r.date >= from);
 

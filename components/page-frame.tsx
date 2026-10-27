@@ -1,4 +1,4 @@
-// 목표·독서·체력검정이 함께 쓰는 화면 틀: 제목 + 요약 3칸, 왼쪽 본문 + 오른쪽 추가 패널, 공통 패널 상자
+// 자격증·독서·체력검정이 함께 쓰는 화면 틀: 제목 + 요약 3칸, 왼쪽 본문 + 오른쪽 추가 패널, 공통 패널 상자
 
 export function PageHeader({
   title,
@@ -27,7 +27,7 @@ export function PageHeader({
   );
 }
 
-// 넓은 화면: 왼쪽 본문 + 오른쪽 고정 패널(추가 폼, 관련 목표). 휴대폰: 패널이 위로 온다.
+// 넓은 화면: 왼쪽 본문 + 오른쪽 고정 패널(추가 폼, 보조 정보). 휴대폰: 패널이 위로 온다.
 export function TwoColumn({ children, aside }: { children: React.ReactNode; aside: React.ReactNode }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">

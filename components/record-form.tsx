@@ -9,8 +9,8 @@ import TargetSelect from "./target-select";
 const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 const QUICK_MINUTES = [15, 30, 60, 120];
 
-// 공부 기록 추가. 기록은 항상 과목 또는 자격증 아래에 쌓인다.
-// fixedTarget을 주면(과목·자격증 상세) 그곳에 고정하고, 아니면(공부 화면) 목록에서 고른다.
+// 공부 기록 추가. 기록은 항상 자격증 아래에 쌓인다.
+// fixedTarget을 주면(자격증 상세) 그 자격증에 고정하고, 아니면(자격증 목록) 준비 중인 자격증에서 고른다.
 export default function RecordForm({
   targets,
   today,
@@ -24,7 +24,7 @@ export default function RecordForm({
   const [minutes, setMinutes] = useState("");
 
   if (!fixedTarget && targets.length === 0) {
-    return <p className="text-sm text-sand-500">공부 중인 과목이나 준비 중인 자격증이 없어요. 먼저 추가해 주세요.</p>;
+    return <p className="text-sm text-sand-500">준비 중인 자격증이 없어요. 먼저 자격증을 추가해 주세요.</p>;
   }
 
   return (
@@ -33,7 +33,7 @@ export default function RecordForm({
         <input type="hidden" name="target" value={fixedTarget} />
       ) : (
         <label className="flex flex-col gap-1 text-sm font-medium">
-          무엇을 공부했나요?
+          어떤 자격증을 공부했나요?
           <TargetSelect targets={targets} className={INPUT} />
         </label>
       )}

@@ -5,7 +5,7 @@ import RankBadge from "@/components/rank-badge";
 
 const FEATURES = [
   { no: "01", title: "전역 D-day", body: "입대일만 넣으면 전역일, 복무율, 다음 진급 예상일을 매일 보여줘요." },
-  { no: "02", title: "목표 관리", body: "자격증, 독서, 운동, 공부 목표를 세우고 목표일까지 남은 날을 확인해요." },
+  { no: "02", title: "자격증", body: "시험 일정과 결과, 자격증별 공부 시간을 한곳에서 관리해요." },
   { no: "03", title: "기록 잔디", body: "하루하루 쌓은 기록을 12주 잔디로 한눈에 보고, 날짜별로 돌아봐요." },
 ];
 

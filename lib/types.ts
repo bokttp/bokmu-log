@@ -15,7 +15,7 @@ export type Profile = {
   onboarded: boolean;
 };
 
-// 공부 기록. 과목 또는 자격증 아래에 쌓인다 (goal_id는 예전 목표 기록에만 남아 있다)
+// 공부 기록. 자격증 아래에 쌓인다 (subject_id·goal_id는 예전 과목·목표 기록에만 남아 있다)
 export type ActivityRecord = {
   id: string;
   subject_id: string | null;
@@ -47,18 +47,7 @@ export type Certificate = {
   record_count: number;
 };
 
-export type Subject = {
-  id: string;
-  name: string;
-  target: string | null; // 예: 토익 800점
-  target_date: string | null;
-  archived: boolean;
-  minutes: number;
-  week_minutes: number; // 이번 주(월~일) 공부 시간
-  record_count: number;
-};
-
-// 기록을 붙일 곳 (과목 또는 자격증). key는 "s:<id>" / "c:<id>"
+// 기록을 붙일 곳. key는 "c:<자격증 id>" (예전 과목 기록은 "s:<id>")
 export type RecordTarget = { key: string; name: string; type: "subject" | "certificate" };
 
 export type Book = {
