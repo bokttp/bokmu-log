@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getGoal } from "@/lib/data";
+import { getGoal, getGoals } from "@/lib/data";
+import { todayKST } from "@/lib/service";
 import { CATEGORY_LABELS, STATUS_LABELS } from "@/lib/types";
 import GoalStatusButtons from "@/components/goal-status-buttons";
+import GoalDeleteButton from "@/components/goal-delete-button";
+import RecordItem from "@/components/record-item";
 
 export const instant = false; // layout.tsx 참고
 
 export default async function GoalDetailPage({ params }: PageProps<"/goals/[id]">) {
   const { id } = await params;
-  const result = await getGoal(id);
+  const [result, goals] = await Promise.all([getGoal(id), getGoals()]);
   if (!result) notFound();
   const { goal, records } = result;
+  const today = todayKST();
   const totalMinutes = records.reduce((sum, r) => sum + (r.minutes ?? 0), 0);
 
   return (
@@ -53,32 +57,25 @@ export default async function GoalDetailPage({ params }: PageProps<"/goals/[id]"
           >
             이 목표에 기록하기
           </Link>
+
+          <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
+            <GoalDeleteButton id={goal.id} recordCount={records.length} />
+          </div>
         </section>
 
-        {/* 오른쪽: 기록 목록 */}
+        {/* 오른쪽: 기록 목록 (수정·삭제) */}
         <section className="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
           <h2 className="mb-2 font-semibold">기록</h2>
           {records.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-500">아직 기록이 없어요.</p>
           ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="text-xs text-zinc-500">
-                <tr className="border-b border-zinc-200 dark:border-zinc-800">
-                  <th className="py-2 pr-4 font-medium">날짜</th>
-                  <th className="py-2 pr-4 font-medium">한 일</th>
-                  <th className="py-2 text-right font-medium">시간</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {records.map((r) => (
-                  <tr key={r.id}>
-                    <td className="py-3 pr-4 whitespace-nowrap text-zinc-500">{r.date.replaceAll("-", ".")}</td>
-                    <td className="py-3 pr-4">{r.content}</td>
-                    <td className="py-3 text-right whitespace-nowrap text-zinc-500">{r.minutes ? `${r.minutes}분` : "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <ul className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
+              {records.map((r) => (
+                <li key={r.id} className="py-3">
+                  <RecordItem record={r} goals={goals} today={today} />
+                </li>
+              ))}
+            </ul>
           )}
         </section>
       </div>

@@ -76,7 +76,12 @@ export default async function DashboardPage() {
 
         {/* 기록 잔디 */}
         <Panel title="최근 12주 기록" className="lg:col-span-2">
-          <RecordGrass weeks={weeks} records={records} />
+          <RecordGrass
+            weeks={weeks}
+            records={records}
+            goals={goals.filter((g) => g.status === "in_progress")}
+            today={today}
+          />
         </Panel>
 
         {/* 진행 중 목표 3개 */}
