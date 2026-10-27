@@ -31,6 +31,13 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
             <LoginError searchParams={searchParams} />
           </Suspense>
           <LoginForm />
+          <p className="mt-6 text-xs text-zinc-500">
+            로그인하면{" "}
+            <Link href="/privacy" className="underline">
+              개인정보 처리방침
+            </Link>
+            에 동의하는 것으로 봐요.
+          </p>
         </div>
       </main>
     </div>

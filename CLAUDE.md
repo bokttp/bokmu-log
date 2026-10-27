@@ -70,7 +70,8 @@ npx supabase gen types typescript --project-id <id> > types/database.ts
 
 - 새 테이블을 만들면 같은 마이그레이션에서 RLS를 켜고 "본인 행만" 정책을 만든다. RLS 없는 사용자 데이터 테이블은 만들지 않는다.
 - 브라우저 코드에는 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`만 쓴다.
-- `SUPABASE_SERVICE_ROLE_KEY`는 서버 액션에서만, 꼭 필요할 때(회원 탈퇴)만 쓴다. `NEXT_PUBLIC_`을 붙이지 않는다.
+- `SUPABASE_SERVICE_ROLE_KEY`는 서버 액션에서만, 꼭 필요할 때(회원 탈퇴)만 쓴다. `NEXT_PUBLIC_`을 붙이지 않는다. 관리자 클라이언트는 `lib/supabase/admin.ts`(server-only) 하나로만 만든다.
+- 테이블·정책을 바꾸면 `supabase/tests/rls_check.sql`에 검사 항목을 추가하고 SQL Editor에서 실행해 실패 0건을 확인한다 (스크립트는 끝에 롤백한다).
 - `.env.local`은 커밋하지 않는다. 키를 커밋하려는 변경이 보이면 멈추고 알린다.
 - 부대명·부대 위치·훈련 일정·실명·군번·생년월일을 받는 입력란을 만들지 않는다.
 - MVP에서는 사진 업로드(Supabase Storage)를 쓰지 않는다.

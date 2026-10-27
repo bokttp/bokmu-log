@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 const FEATURES = [
   { title: "전역 D-day", body: "입대일만 넣으면 전역일, 복무율, 다음 진급 예상일을 매일 보여줘요." },
@@ -10,7 +11,18 @@ const FEATURES = [
 const PREVIEW_GRASS = [0, 2, 1, 3, 0, 1, 2, 2, 0, 3, 1, 0, 2, 1, 3, 2, 0, 1, 2, 3, 1];
 const GRASS_CLASS = ["bg-white/15", "bg-emerald-300/60", "bg-emerald-300/80", "bg-white"];
 
-export default function Home() {
+// 탈퇴 후 /?bye=1 로 오면 안내를 띄운다 (searchParams는 Suspense 안에서 읽는다)
+async function ByeNotice({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
+  const { bye } = await searchParams;
+  if (!bye) return null;
+  return (
+    <p className="mb-8 rounded-xl bg-zinc-100 p-4 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+      탈퇴가 끝났어요. 계정과 모든 기록을 지웠어요. 그동안 고생 많으셨어요.
+    </p>
+  );
+}
+
+export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b border-zinc-200 dark:border-zinc-800">
@@ -23,6 +35,9 @@ export default function Home() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 md:px-8 md:py-20">
+        <Suspense fallback={null}>
+          <ByeNotice searchParams={searchParams} />
+        </Suspense>
         <section className="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">장병 자기계발 기록</p>
@@ -73,8 +88,11 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 dark:border-zinc-800">
-        부대명, 위치, 훈련 일정 같은 군사 정보는 기록하지 마세요.
+      <footer className="flex flex-col items-center gap-2 border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 dark:border-zinc-800">
+        <p>부대명, 위치, 훈련 일정 같은 군사 정보는 기록하지 마세요.</p>
+        <Link href="/privacy" className="underline hover:text-zinc-700 dark:hover:text-zinc-300">
+          개인정보 처리방침
+        </Link>
       </footer>
     </div>
   );

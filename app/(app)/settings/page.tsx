@@ -1,7 +1,9 @@
 import { getProfile, getServicePeriods } from "@/lib/data";
 import { isDemoMode } from "@/lib/demo";
 import { signOut } from "@/app/auth/actions";
+import Link from "next/link";
 import ProfileForm from "@/components/profile-form";
+import DeleteAccountForm from "@/components/delete-account-form";
 
 export const instant = false; // layout.tsx 참고
 
@@ -28,7 +30,16 @@ export default async function SettingsPage() {
             </button>
           </form>
         )}
-        <p className="mt-4 text-xs text-zinc-500">회원 탈퇴는 4주차에 추가돼요.</p>
+        <p className="mt-4 text-xs text-zinc-500">
+          <Link href="/privacy" className="underline">
+            개인정보 처리방침
+          </Link>
+        </p>
+      </section>
+
+      <section className="rounded-2xl border border-red-200 p-5 md:p-8 dark:border-red-900">
+        <h2 className="mb-4 font-semibold text-red-700 dark:text-red-400">회원 탈퇴</h2>
+        <DeleteAccountForm />
       </section>
     </main>
   );
