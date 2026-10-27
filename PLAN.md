@@ -25,7 +25,8 @@
 - [x] Next.js 16 프로젝트 생성, 로컬 git 첫 커밋
 - [x] GitHub 비공개 저장소 `bokttp/bokmu-log` 생성, 푸시 (명세 8.2)
 - [x] Vercel 프로젝트 `bokmu-log` 생성, GitHub 연결 (main 푸시 = 자동 배포)
-- [ ] 첫 배포 확인 (명세 8.5)
+- [x] 첫 배포 확인 — https://bokmu-log.vercel.app (커밋 푸시로 자동 배포됨) (명세 8.5)
+- [x] Supabase Site URL·Redirect URLs 등록 (`bokmu-log.vercel.app/**`, 미리보기 주소, `localhost:3000/**`)
 - [x] Supabase 프로젝트 `bokmu-log` 생성 (서울 ap-northeast-2)
 - [x] Vercel–Supabase 연동으로 환경변수 자동 등록 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 등)
 - [ ] 로컬 `.env.local` 설정 (선택 — 없으면 로컬은 데모 모드)
@@ -35,8 +36,8 @@
 - [x] 로그인 화면, `/auth/callback`, 로그아웃, 임시 대시보드 코드 작성 (`npm run build` 통과)
 - [ ] 이메일 매직링크 로그인·로그아웃, `/auth/callback` 실제 동작 확인
 - [ ] Google 로그인 연동
-- [ ] 미로그인 상태로 `/dashboard` 접근 시 `/login`으로 이동 확인
-- [ ] 배포 주소에서 로그인 확인
+- [x] 미로그인 상태로 `/dashboard` 접근 시 `/login`으로 이동 확인 (배포 주소)
+- [ ] 배포 주소에서 이메일 링크 로그인 확인
 
 ## 2주차 — 온보딩과 전역 계산 (F-02, F-03)
 
