@@ -25,7 +25,7 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm md:p-10 dark:border-zinc-800 dark:bg-zinc-900">
           <h1 className="text-2xl font-bold">로그인</h1>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            처음이면 자동으로 가입돼요. 닉네임만 따로 받아요.
+            이메일과 비밀번호로 로그인해요. 처음이면 회원가입을 눌러 주세요.
           </p>
           <Suspense fallback={null}>
             <LoginError searchParams={searchParams} />

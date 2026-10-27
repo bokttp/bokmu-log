@@ -9,7 +9,8 @@ const EFFECTIVE_DATE = "2026년 10월 27일";
 const CONTACT = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "bokttp1@gmail.com";
 
 const ITEMS = [
-  { item: "이메일 주소", purpose: "로그인 링크 발송, 계정 구분", when: "가입할 때" },
+  { item: "이메일 주소", purpose: "로그인 아이디, 계정 구분", when: "가입할 때" },
+  { item: "비밀번호 (복원할 수 없게 암호화해 저장)", purpose: "로그인", when: "가입·비밀번호 변경할 때" },
   { item: "닉네임, 군종, 입대일, 전역일", purpose: "전역 D-day·복무율·진급 예상일 계산", when: "온보딩·설정에서" },
   { item: "목표, 활동 기록 (내용·날짜·시간)", purpose: "기록 저장, 대시보드·잔디 표시", when: "직접 입력할 때" },
 ];

@@ -17,7 +17,7 @@
 ## 기술 스택
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
-- Supabase: Auth(이메일 매직링크, Google), Postgres, RLS
+- Supabase: Auth(이메일 + 비밀번호, "Confirm email" 꺼짐 — 가입·로그인에 메일을 보내지 않는다. 기본 메일 한도가 1시간 2통이라 메일 기반 기능은 맞춤 SMTP 전까지 피한다), Postgres, RLS
 - `@supabase/supabase-js`, `@supabase/ssr` — 쿠키 기반 세션
 - date-fns (날짜 계산), Vitest (단위 테스트), Recharts (2차, 그래프)
 - GitHub → Vercel 자동 배포 (main = 운영, PR = 미리보기)

@@ -4,6 +4,7 @@ import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
 import ProfileForm from "@/components/profile-form";
 import DeleteAccountForm from "@/components/delete-account-form";
+import PasswordForm from "@/components/password-form";
 
 export const instant = false; // layout.tsx 참고
 
@@ -17,6 +18,11 @@ export default async function SettingsPage() {
       <section className="rounded-2xl border border-zinc-200 p-5 md:p-8 dark:border-zinc-800">
         <h2 className="mb-4 font-semibold">복무 정보</h2>
         <ProfileForm profile={profile} periods={periods} />
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 p-5 md:p-8 dark:border-zinc-800">
+        <h2 className="mb-4 font-semibold">비밀번호</h2>
+        <PasswordForm />
       </section>
 
       <section className="rounded-2xl border border-zinc-200 p-5 md:p-8 dark:border-zinc-800">
