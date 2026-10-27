@@ -26,7 +26,7 @@ export default function SiteHeader() {
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`inline-flex h-10 items-center rounded-lg px-4 text-sm font-semibold ${
+                    className={`inline-flex h-10 items-center rounded-lg px-2.5 text-sm font-semibold lg:px-4 ${
                       isCta
                         ? "ml-2 bg-khaki-300 text-army-900 hover:bg-khaki-200"
                         : active

@@ -6,6 +6,7 @@ import { CATEGORY_LABELS, STATUS_LABELS } from "@/lib/types";
 import GoalStatusButtons from "@/components/goal-status-buttons";
 import GoalDeleteButton from "@/components/goal-delete-button";
 import RecordItem from "@/components/record-item";
+import GoalExamForm from "@/components/goal-exam-form";
 
 export const instant = false; // layout.tsx 참고
 
@@ -48,6 +49,8 @@ export default async function GoalDetailPage({ params }: PageProps<"/goals/[id]"
               <dd className="mt-1 text-sm font-semibold">{Math.round((totalMinutes / 60) * 10) / 10}시간</dd>
             </div>
           </dl>
+
+          {goal.category === "certificate" && <GoalExamForm goal={goal} />}
 
           <GoalStatusButtons id={goal.id} status={goal.status} />
 

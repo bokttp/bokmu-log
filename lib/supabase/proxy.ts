@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // 로그인이 필요한 경로
-const PROTECTED_PATHS = ["/dashboard", "/goals", "/records", "/settings", "/savings", "/onboarding"];
+const PROTECTED_PATHS = ["/dashboard", "/goals", "/records", "/settings", "/savings", "/books", "/fitness", "/more", "/onboarding"];
 
 // 요청마다 세션을 갱신하고, 로그인 여부에 따라 이동시킨다.
 export async function updateSession(request: NextRequest) {

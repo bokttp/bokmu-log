@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS, isActive } from "./nav-items";
+import { MOBILE_ITEMS, isActive } from "./nav-items";
 
 // 좁은 화면(휴대폰)에서만 보이는 하단 고정 탭. 넓은 화면은 상단 메뉴(site-header)를 쓴다.
 export default function BottomNav() {
@@ -11,7 +11,7 @@ export default function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-10 border-t-4 border-khaki-300 bg-army-800 md:hidden dark:bg-army-950">
       <ul className="grid grid-cols-4">
-        {NAV_ITEMS.map((item) => {
+        {MOBILE_ITEMS.map((item) => {
           const active = isActive(pathname, item.href);
           return (
             <li key={item.href}>

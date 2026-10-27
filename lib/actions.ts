@@ -7,8 +7,10 @@ import { isDemoMode } from "./demo";
 import {
   BRANCH_LABELS,
   CATEGORY_LABELS,
+  EXAM_RESULT_LABELS,
   STATUS_LABELS,
   type Branch,
+  type ExamResult,
   type GoalCategory,
   type GoalStatus,
 } from "./types";
@@ -130,6 +132,109 @@ export async function deleteGoal(_: ActionState, form: FormData): Promise<Action
   if (error) return { ok: false, message: "지우지 못했어요. 다시 시도해 주세요." };
   if (!data?.length) return NOT_FOUND;
   redirect("/goals");
+}
+
+// F-07: 자격증 목표의 시험일·결과
+export async function updateGoalExam(_: ActionState, form: FormData): Promise<ActionState> {
+  const id = text(form.get("id"));
+  const examDate = orNull(text(form.get("exam_date")));
+  const examResult = (orNull(text(form.get("exam_result"))) ?? "pending") as ExamResult;
+
+  if (examDate && !/^\d{4}-\d{2}-\d{2}$/.test(examDate)) return { ok: false, message: "시험일을 확인해 주세요." };
+  if (!(examResult in EXAM_RESULT_LABELS)) return FAIL;
+  if (isDemoMode()) return DEMO;
+  if (!isUuid(id)) return NOT_FOUND;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("goals")
+    .update({ exam_date: examDate, exam_result: examResult })
+    .eq("id", id)
+    .eq("category", "certificate")
+    .select("id");
+  if (error) return FAIL;
+  if (!data?.length) return NOT_FOUND;
+  refresh();
+  return { ok: true, message: "시험 정보를 저장했어요." };
+}
+
+// 책·체력검정 삭제 공통 처리. RLS가 본인 행만 지우게 한다.
+async function deleteOwnRow(table: "books" | "fitness_tests", form: FormData, done: string): Promise<ActionState> {
+  const id = text(form.get("id"));
+  if (isDemoMode()) return { ok: true, message: "데모 모드라서 실제로 지워지지는 않아요." };
+  if (!isUuid(id)) return NOT_FOUND;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from(table).delete().eq("id", id).select("id");
+  if (error) return { ok: false, message: "지우지 못했어요. 다시 시도해 주세요." };
+  if (!data?.length) return NOT_FOUND;
+  refresh();
+  return { ok: true, message: done };
+}
+
+// F-08: 독서 기록. 완독일이 비어 있으면 "읽는 중"이다.
+export async function createBook(_: ActionState, form: FormData): Promise<ActionState> {
+  const title = text(form.get("title"));
+  const author = orNull(text(form.get("author")));
+  const finishedOn = orNull(text(form.get("finished_on")));
+  const rating = Number(text(form.get("rating"))) || null;
+  const review = orNull(text(form.get("review")));
+
+  if (title.length < 1 || title.length > 100) return { ok: false, message: "책 제목은 1~100자로 적어 주세요." };
+  if (author && author.length > 60) return { ok: false, message: "저자는 60자까지 적을 수 있어요." };
+  if (finishedOn && !/^\d{4}-\d{2}-\d{2}$/.test(finishedOn)) return { ok: false, message: "완독일을 확인해 주세요." };
+  if (rating !== null && (!Number.isInteger(rating) || rating < 1 || rating > 5)) return { ok: false, message: "별점은 1~5점이에요." };
+  if (review && review.length > 100) return { ok: false, message: "한줄평은 100자까지 적을 수 있어요." };
+  if (isDemoMode()) return DEMO;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("books")
+    .insert({ title, author, finished_on: finishedOn, rating, review });
+  if (error) return FAIL;
+  refresh();
+  return { ok: true, message: "책을 추가했어요." };
+}
+
+export async function deleteBook(_: ActionState, form: FormData): Promise<ActionState> {
+  return deleteOwnRow("books", form, "책을 지웠어요.");
+}
+
+// F-09: 체력검정 기록. 세 종목 중 하나 이상 입력, 3km는 분·초로 받아 초로 저장한다.
+export async function createFitnessTest(_: ActionState, form: FormData): Promise<ActionState> {
+  const testedOn = text(form.get("tested_on"));
+  const count = (name: string) => {
+    const v = text(form.get(name));
+    return v === "" ? null : Number(v);
+  };
+  const pushups = count("pushups");
+  const situps = count("situps");
+  const runMin = count("run_min");
+  const runSec = count("run_sec");
+  const runSeconds = runMin === null && runSec === null ? null : (runMin ?? 0) * 60 + (runSec ?? 0);
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(testedOn)) return { ok: false, message: "검정일을 확인해 주세요." };
+  if (pushups === null && situps === null && runSeconds === null) return { ok: false, message: "한 종목 이상 적어 주세요." };
+  for (const v of [pushups, situps]) {
+    if (v !== null && (!Number.isInteger(v) || v < 0 || v > 300)) return { ok: false, message: "횟수는 0~300회로 적어 주세요." };
+  }
+  if (runSec !== null && (runSec < 0 || runSec > 59)) return { ok: false, message: "초는 0~59로 적어 주세요." };
+  if (runSeconds !== null && (!Number.isInteger(runSeconds) || runSeconds < 300 || runSeconds > 3600)) {
+    return { ok: false, message: "3km 기록은 5분~60분 사이로 적어 주세요." };
+  }
+  if (isDemoMode()) return DEMO;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("fitness_tests")
+    .insert({ tested_on: testedOn, pushups, situps, run_seconds: runSeconds });
+  if (error) return FAIL;
+  refresh();
+  return { ok: true, message: "체력검정 기록을 추가했어요." };
+}
+
+export async function deleteFitnessTest(_: ActionState, form: FormData): Promise<ActionState> {
+  return deleteOwnRow("fitness_tests", form, "체력검정 기록을 지웠어요.");
 }
 
 // 프로필 저장 공통 처리 (설정·온보딩). 저장하면 온보딩 완료로 표시한다.

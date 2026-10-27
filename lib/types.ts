@@ -3,6 +3,7 @@
 export type Branch = "army" | "navy" | "airforce" | "marine" | "social";
 export type GoalCategory = "certificate" | "reading" | "exercise" | "study" | "etc";
 export type GoalStatus = "in_progress" | "done" | "dropped";
+export type ExamResult = "pending" | "pass" | "fail";
 
 export type Profile = {
   id: string;
@@ -21,7 +22,34 @@ export type Goal = {
   target_date: string | null;
   status: GoalStatus;
   completed_at: string | null;
+  exam_date: string | null; // 자격증 목표만 (F-07)
+  exam_result: ExamResult | null;
   record_count: number;
+};
+
+export type Book = {
+  id: string;
+  title: string;
+  author: string | null;
+  finished_on: string | null;
+  rating: number | null;
+  review: string | null;
+};
+
+export type FitnessTest = {
+  id: string;
+  tested_on: string;
+  pushups: number | null;
+  situps: number | null;
+  run_seconds: number | null;
+};
+
+// app_settings의 "savings" 값 (F-10)
+export type SavingsSettings = {
+  monthly_limit: number;
+  base_rate: number;
+  match_ratio: number;
+  max_months: number;
 };
 
 export type ActivityRecord = {
@@ -52,4 +80,10 @@ export const STATUS_LABELS: Record<GoalStatus, string> = {
   in_progress: "진행 중",
   done: "완료",
   dropped: "포기",
+};
+
+export const EXAM_RESULT_LABELS: Record<ExamResult, string> = {
+  pending: "결과 대기",
+  pass: "합격",
+  fail: "불합격",
 };
