@@ -7,6 +7,7 @@ import { BRANCH_LABELS } from "@/lib/types";
 import GoalCard from "@/components/goal-card";
 import RecordGrass from "@/components/record-grass";
 import RankBadge from "@/components/rank-badge";
+import { Panel } from "@/components/page-frame";
 
 // 12주 잔디 칸: 이번 주 월요일에서 11주 전 월요일부터 오늘이 있는 주 일요일까지
 function grassWeeks(today: string) {
@@ -108,31 +109,6 @@ export default async function DashboardPage() {
         </Panel>
       </div>
     </main>
-  );
-}
-
-function Panel({
-  title,
-  action,
-  className = "",
-  children,
-}: {
-  title: string;
-  action?: React.ReactNode;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className={`rounded-2xl border border-sand-200 bg-white/80 p-5 shadow-sm dark:border-sand-800 dark:bg-sand-900/60 ${className}`}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 font-semibold">
-          <span className="h-3 w-1.5 rounded-sm bg-khaki-400" aria-hidden />
-          {title}
-        </h2>
-        {action}
-      </div>
-      {children}
-    </section>
   );
 }
 

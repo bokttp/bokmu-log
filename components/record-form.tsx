@@ -8,35 +8,47 @@ import ActionMessage from "./action-message";
 const INPUT = "h-12 w-full rounded-xl border border-sand-300 bg-transparent px-4 dark:border-sand-700";
 const QUICK_MINUTES = [15, 30, 60, 120];
 
+// 활동 기록 추가. 기록은 항상 목표 아래에 쌓인다.
+// goalId를 주면(목표 상세) 그 목표에 고정하고, 아니면(목표 목록) 진행 중인 목표에서 고른다.
 export default function RecordForm({
   goals,
   today,
-  defaultGoalId,
+  goalId,
 }: {
   goals: Pick<Goal, "id" | "title">[];
   today: string;
-  defaultGoalId: string;
+  goalId?: string;
 }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(createRecord, null);
   const [minutes, setMinutes] = useState("");
 
+  if (!goalId && goals.length === 0) {
+    return <p className="text-sm text-sand-500">진행 중인 목표가 없어요. 먼저 목표를 만들어 주세요.</p>;
+  }
+
   return (
     <form action={action} className="flex flex-col gap-4">
+      {goalId ? (
+        <input type="hidden" name="goal_id" value={goalId} />
+      ) : (
+        <label className="flex flex-col gap-1 text-sm font-medium">
+          목표
+          <select name="goal_id" required defaultValue="" className={INPUT}>
+            <option value="" disabled>
+              목표를 골라 주세요
+            </option>
+            {goals.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
       <label className="flex flex-col gap-1 text-sm font-medium">
         날짜
         <input name="date" type="date" defaultValue={today} max={today} required className={INPUT} />
-      </label>
-
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        목표 (선택)
-        <select name="goal_id" defaultValue={defaultGoalId} className={INPUT}>
-          <option value="">목표 없이 기록</option>
-          {goals.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.title}
-            </option>
-          ))}
-        </select>
       </label>
 
       <label className="flex flex-col gap-1 text-sm font-medium">

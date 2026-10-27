@@ -11,8 +11,7 @@ export default function BookForm({ today }: { today: string }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(createBook, null);
 
   return (
-    <form action={action} className="flex flex-col gap-3 rounded-2xl border border-sand-200 bg-white/80 p-5 shadow-sm dark:border-sand-800 dark:bg-sand-900/60">
-      <h2 className="font-semibold">책 추가</h2>
+    <form action={action} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1 text-sm font-medium">
         제목
         <input name="title" required maxLength={100} placeholder="예: 아주 작은 습관의 힘" className={INPUT} />

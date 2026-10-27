@@ -11,8 +11,7 @@ export default function FitnessForm({ today }: { today: string }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(createFitnessTest, null);
 
   return (
-    <form action={action} className="flex flex-col gap-3 rounded-2xl border border-sand-200 bg-white/80 p-5 shadow-sm dark:border-sand-800 dark:bg-sand-900/60">
-      <h2 className="font-semibold">기록 추가</h2>
+    <form action={action} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1 text-sm font-medium">
         검정일
         <input name="tested_on" type="date" required defaultValue={today} max={today} className={INPUT} />

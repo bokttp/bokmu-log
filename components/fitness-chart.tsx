@@ -21,19 +21,29 @@ export default function FitnessChart({ tests }: { tests: FitnessTest[] }) {
           .map((t) => ({ date: t.tested_on.slice(5).replace("-", "."), value: t[e.key] as number }));
         const latest = data.at(-1);
         const first = data.at(0);
-        const better = latest && first && data.length > 1
-          ? e.key === "run_seconds" ? latest.value < first.value : latest.value > first.value
-          : null;
+        // 첫 기록 대비 변화 (최근 값은 위 요약 칸에 있으므로 여기서는 변화만 보여준다)
+        const diff = latest && first && data.length > 1 ? latest.value - first.value : null;
+        const better = diff !== null && (e.key === "run_seconds" ? diff < 0 : diff > 0);
+        const diffText =
+          diff === null || diff === 0
+            ? null
+            : e.key === "run_seconds"
+              ? `${diff < 0 ? "-" : "+"}${formatRun(Math.abs(diff))}`
+              : `${diff > 0 ? "+" : ""}${diff}회`;
 
         return (
           <section key={e.key} className="rounded-2xl border border-sand-200 bg-white/80 p-4 shadow-sm dark:border-sand-800 dark:bg-sand-900/60">
             <div className="flex items-baseline justify-between gap-2">
               <h3 className="font-semibold">{e.label}</h3>
-              {latest && <span className="font-stencil text-xl text-army-800 dark:text-khaki-200">{e.format(latest.value)}</span>}
+              {diffText && (
+                <span className={`text-sm font-semibold ${better ? "text-army-700 dark:text-khaki-300" : "text-red-600 dark:text-red-400"}`}>
+                  {diffText}
+                </span>
+              )}
             </div>
             <p className="mb-2 text-xs text-sand-500">
-              {e.key === "run_seconds" ? "짧을수록 좋아요 · 위로 갈수록 빨라요" : "많을수록 좋아요"}
-              {better !== null && (better ? " · 첫 기록보다 좋아졌어요" : " · 첫 기록과 비교해 보세요")}
+              {e.key === "run_seconds" ? "짧을수록 좋아요 (위가 빠름)" : "많을수록 좋아요"}
+              {diffText && " · 첫 기록 대비"}
             </p>
             {data.length < 2 ? (
               <p className="flex h-40 items-center justify-center text-center text-sm text-sand-500">

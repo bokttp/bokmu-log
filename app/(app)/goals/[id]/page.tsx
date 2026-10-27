@@ -7,6 +7,9 @@ import GoalStatusButtons from "@/components/goal-status-buttons";
 import GoalDeleteButton from "@/components/goal-delete-button";
 import RecordItem from "@/components/record-item";
 import GoalExamForm from "@/components/goal-exam-form";
+import RecordForm from "@/components/record-form";
+import AddPanel from "@/components/add-panel";
+import { Panel } from "@/components/page-frame";
 
 export const instant = false; // layout.tsx 참고
 
@@ -17,6 +20,12 @@ export default async function GoalDetailPage({ params }: PageProps<"/goals/[id]"
   const { goal, records } = result;
   const today = todayKST();
   const totalMinutes = records.reduce((sum, r) => sum + (r.minutes ?? 0), 0);
+  const related =
+    goal.category === "reading"
+      ? { href: "/books", label: "독서 기록 보기" }
+      : goal.category === "exercise"
+        ? { href: "/fitness", label: "체력검정 기록 보기" }
+        : null;
 
   return (
     <main className="flex flex-col gap-6">
@@ -54,33 +63,42 @@ export default async function GoalDetailPage({ params }: PageProps<"/goals/[id]"
 
           <GoalStatusButtons id={goal.id} status={goal.status} />
 
-          <Link
-            href={`/records/new?goal=${goal.id}`}
-            className="flex h-12 items-center justify-center rounded-xl border border-army-700 font-semibold text-army-700 hover:bg-army-50 dark:border-army-400 dark:text-army-400 dark:hover:bg-army-950"
-          >
-            이 목표에 기록하기
-          </Link>
+          {/* 독서·운동 목표는 독서·체력검정 화면과 이어진다 */}
+          {related && (
+            <Link
+              href={related.href}
+              className="flex h-12 items-center justify-center rounded-xl border border-army-700 font-semibold text-army-700 hover:bg-army-50 dark:border-khaki-300 dark:text-khaki-300 dark:hover:bg-army-950"
+            >
+              {related.label} →
+            </Link>
+          )}
 
           <div className="border-t border-sand-200 pt-3 dark:border-sand-800">
             <GoalDeleteButton id={goal.id} recordCount={records.length} />
           </div>
         </section>
 
-        {/* 오른쪽: 기록 목록 (수정·삭제) */}
-        <section className="rounded-2xl border border-sand-200 bg-white/80 shadow-sm dark:bg-sand-900/60 p-5 dark:border-sand-800">
-          <h2 className="mb-2 font-semibold">기록</h2>
-          {records.length === 0 ? (
-            <p className="py-10 text-center text-sm text-sand-500">아직 기록이 없어요.</p>
-          ) : (
-            <ul className="divide-y divide-sand-200 text-sm dark:divide-sand-800">
-              {records.map((r) => (
-                <li key={r.id} className="py-3">
-                  <RecordItem record={r} goals={goals} today={today} />
-                </li>
-              ))}
-            </ul>
+        {/* 오른쪽: 이 목표에 기록 추가 + 기록 목록 (수정·삭제) */}
+        <div className="flex min-w-0 flex-col gap-4">
+          {goal.status === "in_progress" && (
+            <AddPanel label="이 목표에 기록 추가">
+              <RecordForm goals={[]} goalId={goal.id} today={today} />
+            </AddPanel>
           )}
-        </section>
+          <Panel title={`기록 ${records.length}건`}>
+            {records.length === 0 ? (
+              <p className="py-10 text-center text-sm text-sand-500">아직 기록이 없어요.</p>
+            ) : (
+              <ul className="divide-y divide-sand-200 text-sm dark:divide-sand-800">
+                {records.map((r) => (
+                  <li key={r.id} className="py-3">
+                    <RecordItem record={r} goals={goals} today={today} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        </div>
       </div>
     </main>
   );

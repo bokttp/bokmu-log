@@ -1,23 +1,9 @@
-import { getGoals } from "@/lib/data";
-import { todayKST } from "@/lib/service";
-import RecordForm from "@/components/record-form";
+import { redirect } from "next/navigation";
 
 export const instant = false; // layout.tsx 참고
 
+// 기록 추가는 목표 화면으로 옮겼다. 예전 주소로 들어오면 목표(또는 그 목표 상세)로 보낸다.
 export default async function NewRecordPage({ searchParams }: PageProps<"/records/new">) {
   const { goal } = await searchParams;
-  const goals = (await getGoals()).filter((g) => g.status === "in_progress");
-  const defaultGoalId = typeof goal === "string" && goals.some((g) => g.id === goal) ? goal : "";
-
-  return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <header>
-        <h1 className="text-2xl font-bold md:text-3xl">기록 추가</h1>
-        <p className="mt-1 text-sm text-sand-500">오늘 한 자기계발을 짧게 남겨 보세요.</p>
-      </header>
-      <div className="rounded-2xl border border-sand-200 bg-white/80 shadow-sm dark:bg-sand-900/60 p-5 md:p-8 dark:border-sand-800">
-        <RecordForm goals={goals} today={todayKST()} defaultGoalId={defaultGoalId} />
-      </div>
-    </main>
-  );
+  redirect(typeof goal === "string" && goal ? `/goals/${encodeURIComponent(goal)}` : "/goals");
 }

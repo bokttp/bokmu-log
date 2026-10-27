@@ -1,71 +1,85 @@
 import { connection } from "next/server";
-import { getBooks } from "@/lib/data";
+import { getBooks, getGoals } from "@/lib/data";
 import { deleteBook } from "@/lib/actions";
 import { todayKST } from "@/lib/service";
+import type { Book } from "@/lib/types";
 import BookForm from "@/components/book-form";
+import AddPanel from "@/components/add-panel";
 import DeleteRowButton from "@/components/delete-row-button";
+import RelatedGoals from "@/components/related-goals";
+import { EmptyState, PageHeader, TwoColumn } from "@/components/page-frame";
 
 export const instant = false; // layout.tsx 참고
 
-// 독서 기록 (F-08): 왼쪽 목록, 오른쪽 추가 폼
+// 독서 기록 (F-08). 목표·체력검정과 같은 틀: 요약 3칸, 왼쪽 카드 목록, 오른쪽 추가 + 관련 목표
 export default async function BooksPage() {
   await connection();
-  const books = await getBooks();
+  const [books, goals] = await Promise.all([getBooks(), getGoals()]);
   const today = todayKST();
   const year = today.slice(0, 4);
   const finished = books.filter((b) => b.finished_on);
-  const thisYear = finished.filter((b) => b.finished_on?.startsWith(year)).length;
   const rated = finished.filter((b) => b.rating);
   const avg = rated.length ? Math.round((rated.reduce((s, b) => s + (b.rating ?? 0), 0) / rated.length) * 10) / 10 : null;
 
   return (
     <main className="flex flex-col gap-6">
-      <header>
-        <h1 className="text-2xl font-bold md:text-3xl">독서</h1>
-        <p className="mt-1 text-sm text-sand-500">
-          완독 {finished.length}권 · {year}년 {thisYear}권{avg !== null && ` · 평균 별점 ${avg}`}
-        </p>
-      </header>
+      <PageHeader
+        title="독서"
+        description="읽은 책과 한줄평을 남겨요."
+        stats={[
+          { label: "완독", value: `${finished.length}권` },
+          { label: `${year}년`, value: `${finished.filter((b) => b.finished_on?.startsWith(year)).length}권` },
+          { label: "평균 별점", value: avg !== null ? `${avg}점` : "-" },
+        ]}
+      />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
-        <section className="rounded-2xl border border-sand-200 bg-white/80 p-5 shadow-sm dark:border-sand-800 dark:bg-sand-900/60">
-          {books.length === 0 ? (
-            <p className="py-16 text-center text-sm text-sand-500">아직 기록한 책이 없어요. 첫 책을 추가해 보세요.</p>
-          ) : (
-            <ul className="divide-y divide-sand-200 dark:divide-sand-800">
-              {books.map((b) => (
-                <li key={b.id} className="flex items-start justify-between gap-3 py-4">
-                  <div className="min-w-0">
-                    <p className="font-semibold break-words">
-                      {b.title}
-                      {b.author && <span className="ml-2 text-sm font-normal text-sand-500">{b.author}</span>}
-                    </p>
-                    <p className="mt-1 flex flex-wrap items-center gap-2 text-sm">
-                      {b.finished_on ? (
-                        <span className="text-sand-500">{b.finished_on.replaceAll("-", ".")} 완독</span>
-                      ) : (
-                        <span className="rounded bg-khaki-200 px-2 py-0.5 text-xs font-semibold text-army-900 dark:bg-army-800 dark:text-khaki-200">읽는 중</span>
-                      )}
-                      {b.rating && (
-                        <span className="text-army-700 dark:text-khaki-300" aria-label={`별점 ${b.rating}점`}>
-                          {"★".repeat(b.rating)}
-                          <span className="text-sand-300 dark:text-sand-700">{"★".repeat(5 - b.rating)}</span>
-                        </span>
-                      )}
-                    </p>
-                    {b.review && <p className="mt-1 text-sm text-sand-600 dark:text-sand-400">“{b.review}”</p>}
-                  </div>
-                  <DeleteRowButton id={b.id} action={deleteBook} confirmText="이 책 기록을 지울까요? 되돌릴 수 없어요." />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <aside className="order-first lg:sticky lg:top-24 lg:order-none">
-          <BookForm today={today} />
-        </aside>
-      </div>
+      <TwoColumn
+        aside={
+          <>
+            <AddPanel label="책 추가">
+              <BookForm today={today} />
+            </AddPanel>
+            <RelatedGoals goals={goals} category="reading" today={today} emptyText="독서 목표 만들기" />
+          </>
+        }
+      >
+        {books.length === 0 ? (
+          <EmptyState>아직 기록한 책이 없어요. 첫 책을 추가해 보세요.</EmptyState>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
+            {books.map((b) => (
+              <BookCard key={b.id} book={b} />
+            ))}
+          </div>
+        )}
+      </TwoColumn>
     </main>
+  );
+}
+
+// 목표 카드와 같은 모양: 위에 상태 태그 + 오른쪽 값, 가운데 제목, 아래 보조 정보
+function BookCard({ book }: { book: Book }) {
+  return (
+    <article className={`flex flex-col rounded-2xl border border-sand-200 bg-white/80 p-4 shadow-sm dark:border-sand-800 dark:bg-sand-900/60 ${book.finished_on ? "" : "ring-1 ring-khaki-300"}`}>
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <span className="rounded bg-khaki-200 px-2 py-0.5 font-semibold text-army-900 dark:bg-army-800 dark:text-khaki-200">
+          {book.finished_on ? "완독" : "읽는 중"}
+        </span>
+        {book.rating && (
+          <span className="text-sm text-army-700 dark:text-khaki-300" aria-label={`별점 ${book.rating}점`}>
+            {"★".repeat(book.rating)}
+            <span className="text-sand-300 dark:text-sand-700">{"★".repeat(5 - book.rating)}</span>
+          </span>
+        )}
+      </div>
+      <p className="mt-2 font-semibold break-words">{book.title}</p>
+      {book.review && <p className="mt-1 text-sm text-sand-600 dark:text-sand-400">“{book.review}”</p>}
+      <div className="mt-auto flex items-end justify-between gap-2 pt-1">
+        <p className="text-sm text-sand-500">
+          {[book.author, book.finished_on?.replaceAll("-", ".")].filter(Boolean).join(" · ")}
+        </p>
+        <DeleteRowButton id={book.id} action={deleteBook} confirmText="이 책 기록을 지울까요? 되돌릴 수 없어요." />
+      </div>
+    </article>
   );
 }

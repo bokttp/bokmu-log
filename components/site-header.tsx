@@ -17,24 +17,18 @@ export default function SiteHeader() {
         <RunningSoldier />
         <nav className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {/* "기록 추가"는 강조 버튼이라 맨 오른쪽에 둔다 */}
-            {[...NAV_ITEMS].sort((a, b) => Number(a.href === "/records/new") - Number(b.href === "/records/new")).map((item) => {
+            {NAV_ITEMS.map((item) => {
               const active = isActive(pathname, item.href);
-              const isCta = item.href === "/records/new";
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`inline-flex h-10 items-center rounded-lg px-2.5 text-sm font-semibold lg:px-4 ${
-                      isCta
-                        ? "ml-2 bg-khaki-300 text-army-900 hover:bg-khaki-200"
-                        : active
-                          ? "bg-army-950/40 text-white"
-                          : "text-khaki-200 hover:bg-army-700"
+                    className={`inline-flex h-10 items-center rounded-lg px-3 text-sm font-semibold lg:px-4 ${
+                      active ? "bg-army-950/40 text-white" : "text-khaki-200 hover:bg-army-700"
                     }`}
                   >
-                    {isCta ? "+ 기록 추가" : item.label}
+                    {item.label}
                   </Link>
                 </li>
               );

@@ -44,6 +44,8 @@ function parseRecord(form: FormData) {
 export async function createRecord(_: ActionState, form: FormData): Promise<ActionState> {
   const { error: invalid, values } = parseRecord(form);
   if (invalid) return invalid;
+  // 새 기록은 목표 아래에만 추가한다 (예전 목표 없는 기록은 그대로 둔다)
+  if (!values.goal_id) return { ok: false, message: "기록할 목표를 골라 주세요." };
   if (isDemoMode()) return DEMO;
 
   const supabase = await createClient();

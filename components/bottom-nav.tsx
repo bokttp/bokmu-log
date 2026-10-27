@@ -10,7 +10,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-10 border-t-4 border-khaki-300 bg-army-800 md:hidden dark:bg-army-950">
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {MOBILE_ITEMS.map((item) => {
           const active = isActive(pathname, item.href);
           return (
